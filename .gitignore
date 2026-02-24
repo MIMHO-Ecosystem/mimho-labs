@@ -1,0 +1,18 @@
+# Foundry
+out/
+cache/
+
+# Env
+.env
+
+# Node / misc
+node_modules/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Coverage
+lcov.info

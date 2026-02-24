@@ -1,0 +1,6 @@
+{
+    "filter_paths": "lib",
+    "exclude_dependencies": true,
+    "detectors_to_exclude": "low-level-calls,solc-version,naming-convention,timestamp,pragma,assembly,incorrect-exp,divide-before-multiply,cyclomatic-complexity",
+    "legacy_ast": false
+}

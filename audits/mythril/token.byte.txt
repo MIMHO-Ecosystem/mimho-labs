@@ -1,0 +1,2 @@
+SWC-101 (Integer Arithmetic) — False Positive (bytecode mode)
+The findings reference 0x2d99d32e, which resolves to setAMMPair(address,bool). This function contains no arithmetic; it only updates a mapping and emits events. Solidity version is 0.8.28 (checked arithmetic by default). Therefore, SWC-101 reports in bytecode analysis are considered non-actionable false positives, likely caused by EVM internal offset/memory computations and ABI encoding.
