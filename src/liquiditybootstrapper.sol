@@ -79,6 +79,10 @@ interface IMIMHOEventsHub {
     ) external;
 }
 
+interface IMIMHOPresale {
+    function presalePriceWeiPerToken() external pure returns (uint256);
+}
+
 /**
  * @title MIMHO Liquidity Bootstrapper (One-Shot)
  * @notice Receives presale BNB, creates the MIMHO/BNB pool, burns LP forever,
@@ -149,6 +153,9 @@ contract MIMHOLiquidityBootstrapper is Ownable2Step, Pausable, ReentrancyGuard {
         require(presaleContract_ != address(0), "PRESALE_ZERO");
         require(lpBurnAddress_ != address(0), "BURN_ZERO");
         require(presalePriceWeiPerToken_ > 0, "PRICE_ZERO");
+        
+        uint256 expected = IMIMHOPresale(presaleContract_).presalePriceWeiPerToken();
+        require(presalePriceWeiPerToken_ == expected, "PRESALE_PRICE_MISMATCH");
 
         registry = IMIMHORegistry(registry_);
         mimho = IERC20(mimhoToken_);

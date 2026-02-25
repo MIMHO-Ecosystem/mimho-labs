@@ -397,7 +397,10 @@ contract MIMHOInjectLiquidity is Ownable2StepLite, ReentrancyGuardLite, Pausable
     uint256 deadline
 ) external whenNotPaused nonReentrant {
     require(autoInjectEnabled, "Not authorized");
-    require(block.timestamp >= lastInjectionTimestamp + injectionCooldown, "Cooldown active");
+    require(
+    lastInjectionTimestamp == 0 || block.timestamp >= lastInjectionTimestamp + injectionCooldown,
+    "Cooldown active"
+);
 
     address token = _mimhoToken();
     address router = _dexRouter();
@@ -477,10 +480,10 @@ contract MIMHOInjectLiquidity is Ownable2StepLite, ReentrancyGuardLite, Pausable
     }
 
     function canInjectNow() external view returns (bool) {
-        if (!autoInjectEnabled) return false;
-        if (block.timestamp < lastInjectionTimestamp + injectionCooldown) return false;
-        return true;
-    }
+    if (!autoInjectEnabled) return false;
+    if (lastInjectionTimestamp != 0 && block.timestamp < lastInjectionTimestamp + injectionCooldown) return false;
+    return true;
+}
 
     /* -------------------------
        Internal helpers

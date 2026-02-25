@@ -285,6 +285,16 @@ contract MIMHOPresale is Ownable2Step, Pausable, ReentrancyGuard {
         return (bnbInWei * TOKENS_PER_BNB) / 1e18;
     }
 
+    /// @notice Presale unit price in wei per 1 token (1e18 units).
+    /// @dev Deterministic and derived from TOKENS_FOR_SALE / HARD_CAP.
+    ///      Used by LiquidityBootstrapper to validate constructor config.
+    function presalePriceWeiPerToken() external pure returns (uint256) {
+        // Because token has 18 decimals:
+        // tokensOut = bnbWei * TOKENS_PER_BNB / 1e18
+        // => priceWeiPerToken = 1e36 / TOKENS_PER_BNB
+        return (1e36) / TOKENS_PER_BNB;
+    }
+
     function requiredTokenDeposit() external pure returns (uint256) {
         return TOKENS_FOR_SALE;
     }
@@ -362,8 +372,21 @@ contract MIMHOPresale is Ownable2Step, Pausable, ReentrancyGuard {
        ========================= */
 
     receive() external payable {
+    // During sale: treat direct BNB as a buy (auto-buy).
+    if (saleActive()) {
         buy();
+        return;
     }
+
+    // Outside sale: ONLY allow BNB from LiquidityBootstrapper (refund/excess),
+    // or from Owner (manual administrative funding if ever needed).
+    address lb = cachedLiquidityBootstrapper;
+
+    require(
+        msg.sender == lb || msg.sender == owner(),
+        "BNB_BLOCKED"
+    );
+}
 
     function buy() public payable nonReentrant whenNotPaused {
         require(saleActive(), "SALE_NOT_ACTIVE");
@@ -453,28 +476,51 @@ contract MIMHOPresale is Ownable2Step, Pausable, ReentrancyGuard {
     uint256 founderAmount = (totalRaisedWei * FOUNDER_BPS) / 10_000;
     uint256 liquidityAmount = totalRaisedWei - founderAmount;
 
+    bool founderPaidNow = false;
     bool founderQueuedNow = false;
+
+    bool liquidityPaidNow = false;
     bool liquidityQueuedNow = false;
 
-    // --------- EFFECTS (NO EXTERNAL CALLS) ----------
+    // ---------- EFFECTS FIRST ----------
+    // Mark intent via flags only when we successfully pay OR queue.
+    // (We do NOT set founderPaid/liquidityPaid until after each path completes)
+
+    // ---------- FOUNDER PAYOUT ----------
     if (!founderPaid && founderAmount > 0) {
-        founderPaid = true;
-        founderQueuedNow = true;
-        pendingNative[FOUNDER_SAFE] += founderAmount; // <-- você precisa ter esse mapping
+        // Try immediate push
+        (bool ok, ) = payable(FOUNDER_SAFE).call{value: founderAmount}("");
+        if (ok) {
+            founderPaid = true;
+            founderPaidNow = true;
+        } else {
+            // Fallback to pending
+            pendingNative[FOUNDER_SAFE] += founderAmount;
+            founderPaid = true;
+            founderQueuedNow = true;
+        }
     }
 
+    // ---------- LIQUIDITY BOOTSTRAPPER PAYOUT ----------
     if (!liquidityPaid && liquidityAmount > 0) {
         address lb = cachedLiquidityBootstrapper;
         require(lb != address(0), "LB_NOT_SET");
 
-        liquidityPaid = true;
-        liquidityQueuedNow = true;
-        pendingNative[lb] += liquidityAmount; // <-- idem
+        // Try to push to LB handler (preferred)
+        try IMIMHOLiquidityBootstrapper(lb).receivePresaleBNB{value: liquidityAmount}() {
+            liquidityPaid = true;
+            liquidityPaidNow = true;
+        } catch {
+            // Fallback to pending
+            pendingNative[lb] += liquidityAmount;
+            liquidityPaid = true;
+            liquidityQueuedNow = true;
+        }
     }
 
     emit FundsPushed(
-        founderQueuedNow,
-        liquidityQueuedNow,
+        founderPaidNow || founderQueuedNow,
+        liquidityPaidNow || liquidityQueuedNow,
         founderAmount,
         liquidityAmount,
         cachedLiquidityBootstrapper
@@ -485,7 +531,9 @@ contract MIMHOPresale is Ownable2Step, Pausable, ReentrancyGuard {
         msg.sender,
         address(this).balance,
         abi.encode(
+            founderPaidNow,
             founderQueuedNow,
+            liquidityPaidNow,
             liquidityQueuedNow,
             founderAmount,
             liquidityAmount,

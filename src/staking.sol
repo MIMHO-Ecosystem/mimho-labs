@@ -427,25 +427,75 @@ contract MIMHOStaking is Ownable2Step, ReentrancyGuard, Pausable, IContratoMIMHO
         - Hub emit must not happen mid-function (last line best-effort)
     ======================================================= */
     function claim() external nonReentrant whenNotPaused {
-        require(!blacklist[msg.sender], "MIMHO: blacklisted");
-        StakePos storage p = stakes[msg.sender];
-        // ... (seus requires de tempo aqui)
+    require(!blacklist[msg.sender], "MIMHO: blacklisted");
 
-        _accrue(msg.sender); // Atualiza os cálculos internos
+    StakePos storage p = stakes[msg.sender];
+    require(p.amount > 0, "MIMHO: no stake");
 
-        uint256 reward = p.accrued;
-        require(reward > 0, "MIMHO: no reward");
+    // Must have held stake for minimum time to earn
+    require(block.timestamp >= p.stakedAt + minHoldToEarn, "MIMHO: hold too short");
 
-        // --- EFFECTS (Mova para cá) ---
-        p.accrued = 0; // Zera ANTES de enviar
-        p.lastClaimAt = block.timestamp;
-        rewardReserve -= reward;
-        // ... (outras atualizações de estado)
+    // Cooldown between claims
+    require(p.lastClaimAt == 0 || block.timestamp >= p.lastClaimAt + claimCooldown, "MIMHO: cooldown");
 
-        // --- INTERACTIONS (No final) ---
-        require(mimhoToken.transfer(msg.sender, reward), "TRANSFER_FAIL");
-        _emitHubEvent(ACT_CLAIM, reward, abi.encode(msg.sender, reward));
+    // Roll caps windows first (pure state, no transfers)
+    _rollWeekIfNeeded();
+    _rollYearIfNeeded();
+
+    // Accrue first (updates p.accrued and p.lastAccrueAt)
+    _accrue(msg.sender);
+
+    uint256 reward = p.accrued;
+    require(reward > 0, "MIMHO: no reward");
+
+    // Per-claim cap (anti-drain): max % of weeklyLimit
+    uint256 maxPerClaim = (weeklyLimit * maxClaimBpsOfWeekly) / BPS;
+    if (reward > maxPerClaim) {
+        reward = maxPerClaim;
     }
+
+    // Weekly cap
+    require(distributedThisWeek + reward <= weeklyLimit, "MIMHO: weekly cap");
+
+    // Promised-phase annual cap (first N days)
+    if (block.timestamp <= promisedPhaseEndsAt) {
+        require(distributedThisYear + reward <= annualCapPromised, "MIMHO: annual cap");
+    }
+
+    // Reserve safety
+    require(rewardReserve >= reward, "MIMHO: reserve low");
+
+    // --------------------
+    // EFFECTS (CEI)
+    // --------------------
+    p.accrued -= reward;
+    p.lastClaimAt = block.timestamp;
+
+    rewardReserve -= reward;
+
+    distributedThisWeek += reward;
+    if (block.timestamp <= promisedPhaseEndsAt) {
+        distributedThisYear += reward;
+    }
+
+    bool reinvested = p.reinvest;
+    if (reinvested) {
+        // Reinvest converts reward into more stake (no token leaves contract)
+        p.amount += reward;
+        totalStaked += reward;
+    }
+
+    emit Claimed(msg.sender, reward, reinvested);
+
+    // --------------------
+    // INTERACTIONS (ABSOLUTE END)
+    // --------------------
+    if (!reinvested) {
+        require(mimhoToken.transfer(msg.sender, reward), "MIMHO: transfer fail");
+    }
+
+    _emitHubEvent(ACT_CLAIM, reward, abi.encode(msg.sender, reward, reinvested, p.amount, totalStaked, rewardReserve));
+}
 
     function setReinvest(bool enabled) external whenNotPaused {
         stakes[msg.sender].reinvest = enabled;
