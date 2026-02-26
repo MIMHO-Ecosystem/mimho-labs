@@ -1,66 +1,71 @@
-## Foundry
+# 🧪 MIMHO Labs — Core Tests & Tooling
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+This repository contains the **technical testing, auditing, and tooling environment**
+for the **MIMHO Ecosystem**, built using **Foundry**.
 
-Foundry consists of:
+It is used internally to validate security, behavior, and integration of contracts
+**before and after deployment**.
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+---
 
-## Documentation
+## 🎯 Purpose
 
-https://book.getfoundry.sh/
+- Execute unit and integration tests for MIMHO contracts
+- Simulate edge cases, attack vectors, and failure scenarios
+- Support internal audits and security reviews
+- Validate protocol assumptions before mainnet deployment
 
-## Usage
+---
 
-### Build
+## 🛠️ Tech Stack
 
-```shell
-$ forge build
-```
+- **Solidity**
+- **Foundry (forge / cast)**
+- Custom test utilities and helpers
 
-### Test
+---
 
-```shell
-$ forge test
-```
+## 📁 Repository Structure
 
-### Format
+- `src/` — Contracts under test
+- `test/` — Test suites and scenarios
+- `audits/` — Internal and experimental audit reports
+- `lib/` — External libraries
+- `.github/workflows/` — CI pipelines
 
-```shell
-$ forge fmt
-```
+---
 
-### Gas Snapshots
+## 🔐 Security Note
 
-```shell
-$ forge snapshot
-```
+This repository may contain:
+- Experimental code
+- In-progress tests
+- Non-final contract versions
 
-### Anvil
+It **must not** be used as a deployment reference.
 
-```shell
-$ anvil
-```
+---
 
-### Deploy
+## 🔗 Official References
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+- **Core Specs & Documentation:**  
+  https://github.com/MIMHO-Ecosystem/mimho-core
 
-### Cast
+- **Website:**  
+  https://mimho.io
 
-```shell
-$ cast <subcommand>
-```
+---
 
-### Help
+## ⚠️ Disclaimer
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+This repository is **technical infrastructure only**.
+
+Nothing here constitutes:
+- Financial advice
+- A promise of functionality
+- A final implementation
+
+---
+
+*MIMHO — The Memecoin of the Future*  
+*Tested, not trusted.*
