@@ -52,18 +52,18 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 interface IMIMHORegistry {
     function getContract(bytes32 key) external view returns (address);
 
-    function KEY_MIMHO_TOKEN() external pure returns (bytes32);
-    function KEY_MIMHO_DAO() external pure returns (bytes32);
-    function KEY_MIMHO_EVENTS_HUB() external pure returns (bytes32);
-    function KEY_MIMHO_STRATEGY_HUB() external pure returns (bytes32);
+    function KEY_MIMHO_TOKEN() external view returns (bytes32);
+    function KEY_MIMHO_DAO() external view returns (bytes32);
+    function KEY_MIMHO_EVENTS_HUB() external view returns (bytes32);
+    function KEY_MIMHO_STRATEGY_HUB() external view returns (bytes32);
 
-    function KEY_MIMHO_SCORE() external pure returns (bytes32);
-    function KEY_MIMHO_SECURITY_WALLET() external pure returns (bytes32);
-    function KEY_MIMHO_MART() external pure returns (bytes32);
-    function KEY_MIMHO_BET() external pure returns (bytes32);
+    function KEY_MIMHO_SCORE() external view returns (bytes32);
+    function KEY_MIMHO_SECURITY_WALLET() external view returns (bytes32);
+    function KEY_MIMHO_MART() external view returns (bytes32);
+    function KEY_MIMHO_BET() external view returns (bytes32);
 
-    function KEY_MIMHO_GATEWAY() external pure returns (bytes32);
-    function KEY_MIMHO_VERITAS() external pure returns (bytes32);
+    function KEY_MIMHO_GATEWAY() external view returns (bytes32);
+    function KEY_MIMHO_VERITAS() external view returns (bytes32);
 }
 
 /* ============================================================
