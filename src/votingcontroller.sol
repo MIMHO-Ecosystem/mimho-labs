@@ -2,7 +2,7 @@
 pragma solidity 0.8.28;
 
 /* ============================================================
-   MIMHO Inject Liquidity Voting Controller — v1.0.1 (Pre-DAO)
+   MIMHO Inject Liquidity Voting Controller — v1.0.2 (Pre-DAO)
    ============================================================
 
    DESIGN PHILOSOPHY (MIMHO ABSOLUTE STANDARD)
@@ -26,17 +26,16 @@ pragma solidity 0.8.28;
 
    - Registry-First, No Hardcoded Addresses:
      All integrations resolve addresses from MIMHORegistry using its
-     public KEY getters (no local keccak/string repetition).
+     public KEY getters (no local keccak/string repetition for keys).
 
    - Permission Model with Clean DAO Takeover:
      Uses onlyDAOorOwner before DAO activation and onlyDAO after.
      No renounceOwnership patterns.
 
    - No Cron / No Hidden Automation:
-     Blockchain does not execute by itself. Anyone can finalize after
-     the end time. The "authorization" is pushed to InjectLiquidity
-     at finalize (one call), InjectLiquidity does the execution later
-     under its own cooldown/guards.
+     Anyone can finalize after the end time. The "authorization" is pushed
+     to InjectLiquidity at finalize (one call), InjectLiquidity does execution
+     later under its own cooldown/guards.
 
    ============================================================ */
 
@@ -51,6 +50,7 @@ interface IMIMHORegistry {
     function KEY_MIMHO_TOKEN() external view returns (bytes32);
     function KEY_MIMHO_INJECT_LIQUIDITY() external view returns (bytes32);
     function KEY_MIMHO_EVENTS_HUB() external view returns (bytes32);
+    function KEY_MIMHO_DAO() external view returns (bytes32);
 }
 
 interface IMIMHOEventsHub {
@@ -78,7 +78,7 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
     //////////////////////////////////////////////////////////////*/
 
     string public constant name = "MIMHO Inject Liquidity Voting Controller";
-    string public constant version = "1.0.1";
+    string public constant version = "1.0.2";
 
     /// @dev Used by Events Hub as "module" identifier (HUD category)
     function contractType() public pure returns (bytes32) {
@@ -102,25 +102,31 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
         _;
     }
 
+    event DAOSet(address indexed dao);
+    event DAOActivated(address indexed dao);
+
+    /// @notice Manual set (pre-DAO), optional. After activation, DAO becomes enforced.
     function setDAO(address dao) external onlyOwner {
         require(!daoActivated, "MIMHO: DAO active");
         require(dao != address(0), "MIMHO: dao=0");
 
-        // Efeito
         daoAddress = dao;
 
-        // ✅ CORREÇÃO SLITHER: Emissão do evento padrão
         emit DAOSet(dao);
-
-        // Registro no Hub
-        _emitHubEvent(bytes32("ACTION_SET_DAO"), msg.sender, 0, abi.encode(dao));
+        _emitHubEvent(ACTION_SET_DAO, msg.sender, 0, abi.encode(dao));
     }
 
+    /// @notice Activate DAO control (Registry-first).
     function activateDAO() external onlyOwner {
-        require(daoAddress != address(0), "MIMHO: DAO not set");
+        require(!daoActivated, "MIMHO: DAO active");
+        address dao = registry.getContract(registry.KEY_MIMHO_DAO());
+        require(dao != address(0), "MIMHO: DAO not set in registry");
+
+        daoAddress = dao;
         daoActivated = true;
-        emit DAOActivated(daoAddress);
-        _emitHubEvent(ACTION_DAO_ACTIVATED, msg.sender, 0, abi.encode(daoAddress));
+
+        emit DAOActivated(dao);
+        _emitHubEvent(ACTION_DAO_ACTIVATED, msg.sender, 0, abi.encode(dao));
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -129,12 +135,15 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
 
     IMIMHORegistry public immutable registry;
 
-    constructor(address registryAddr) Ownable() {
+    constructor(address registryAddr) {
         require(registryAddr != address(0), "MIMHO: registry=0");
         registry = IMIMHORegistry(registryAddr);
 
-        // Soft-announce deploy (best-effort)
-        _emitHubEvent(ACTION_DEPLOYED, msg.sender, 0, abi.encode(registryAddr));
+        // sensible defaults (avoid spam before config)
+        voteCooldown = 7 days;
+        minBalance = 0;
+
+        _emitHubEvent(ACTION_DEPLOYED, msg.sender, 0, abi.encode(registryAddr, voteCooldown, minBalance));
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -145,9 +154,8 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
     uint256 public minBalance;
 
     /// @notice Controls how frequently a new vote can be started.
-    /// @dev This is NOT the injection cooldown; InjectLiquidity must enforce its own cooldown.
-    uint256 public voteCooldown; // default configurable (e.g., 7 days)
-    uint256 public lastVoteStart; // timestamp of last startVote()
+    uint256 public voteCooldown;
+    uint256 public lastVoteStart;
 
     uint256 public constant MIN_VOTE_COOLDOWN = 1 days;
     uint256 public constant MAX_VOTE_COOLDOWN = 45 days;
@@ -156,11 +164,7 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
                               VOTING STATE
     //////////////////////////////////////////////////////////////*/
 
-    // Phases:
-    // - Prepare: [prepareStart, voteStart)
-    // - Vote:    [voteStart, voteEnd)
-    // - Ended:   >= voteEnd (anyone can finalize)
-    uint256 public voteId; // increments each new cycle
+    uint256 public voteId;
 
     uint256 public prepareStart;
     uint256 public voteStart;
@@ -171,21 +175,18 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
 
     bool public voteFinalized;
 
-    // per vote tracking without clearing mappings
-    mapping(address => uint256) private _votedIn; // voter => voteId they voted in
-    mapping(address => uint256) private _weightSnapshot; // last snapshot stored
-    mapping(address => uint256) private _weightSnapshotIn; // voteId for which snapshot is valid
+    mapping(address => uint256) private _votedIn;
+    mapping(address => uint256) private _weightSnapshot;
+    mapping(address => uint256) private _weightSnapshotIn;
 
     /*//////////////////////////////////////////////////////////////
                                  EVENTS
     //////////////////////////////////////////////////////////////*/
 
     event VoteStarted(uint256 indexed voteId, uint256 prepareStart, uint256 voteStart, uint256 voteEnd);
-    event VoteCast(uint256 indexed voteId, address indexed  voter, bool support, uint256 weight);
+    event VoteCast(uint256 indexed voteId, address indexed voter, bool support, uint256 weight);
     event VoteFinalized(uint256 indexed voteId, bool approved);
     event AutoInjectStatusChanged(bool enabled);
-    event DAOSet(address indexed dao);
-    event DAOActivated(address indexed dao);
 
     event MinBalanceChanged(uint256 newMinBalance);
     event VoteCooldownChanged(uint256 newCooldown);
@@ -194,13 +195,11 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
                             EVENTS HUB (ABS)
     //////////////////////////////////////////////////////////////*/
 
-    // Actions (bytes32) for hub
     bytes32 private constant ACTION_DEPLOYED          = keccak256("DEPLOYED");
     bytes32 private constant ACTION_SET_DAO           = keccak256("SET_DAO");
-    bytes32 private constant ACTION_ACTIVATE_DAO      = keccak256("ACTIVATE_DAO");
+    bytes32 private constant ACTION_DAO_ACTIVATED     = keccak256("DAO_ACTIVATED");
     bytes32 private constant ACTION_PAUSED            = keccak256("PAUSED");
     bytes32 private constant ACTION_UNPAUSED          = keccak256("UNPAUSED");
-    bytes32 public constant ACTION_DAO_ACTIVATED      = keccak256("ACTION_DAO_ACTIVATED");
 
     bytes32 private constant ACTION_VOTE_STARTED      = keccak256("VOTE_STARTED");
     bytes32 private constant ACTION_VOTE_CAST         = keccak256("VOTE_CAST");
@@ -214,11 +213,8 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
         address hubAddr = registry.getContract(registry.KEY_MIMHO_EVENTS_HUB());
         if (hubAddr == address(0)) return;
 
-        // ABSOLUTE RULE: best-effort try/catch to never break core logic
         try IMIMHOEventsHub(hubAddr).emitEvent(contractType(), action, caller, value, data) {
-            // ok
         } catch {
-            // ignore
         }
     }
 
@@ -226,7 +222,6 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
                              ADMIN CONFIG
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Adjust the minimum balance to vote. Set to 0 for open voting.
     function setMinBalance(uint256 newMinBalance) external onlyDAOorOwner {
         require(!isVotingActive(), "MIMHO: locked during vote");
         minBalance = newMinBalance;
@@ -234,7 +229,6 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
         _emitHubEvent(ACTION_MIN_BALANCE_SET, msg.sender, newMinBalance, "");
     }
 
-    /// @notice Adjust how often a new vote can start (vote creation frequency).
     function setVoteCooldown(uint256 newCooldown) external onlyDAOorOwner {
         require(!isVotingActive(), "MIMHO: locked during vote");
         require(newCooldown >= MIN_VOTE_COOLDOWN, "MIMHO: cooldown too low");
@@ -248,10 +242,6 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
                           START / PHASE CONTROL
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Starts a new cycle with a prepare phase and a vote phase.
-    /// @dev Only owner/DAO can start. Anyone can finalize after voteEnd.
-    /// @param prepareDuration Seconds for community to prepare (no voting allowed).
-    /// @param voteDuration Seconds for actual voting.
     function startVote(uint256 prepareDuration, uint256 voteDuration)
         external
         onlyDAOorOwner
@@ -262,15 +252,8 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
         require(!isVotingActive(), "MIMHO: already active");
         require(block.timestamp >= lastVoteStart + voteCooldown, "MIMHO: vote cooldown");
 
-        // Registry sanity checks (avoid misconfig errors)
-        require(
-            registry.getContract(registry.KEY_MIMHO_TOKEN()) != address(0),
-            "MIMHO: token not set in registry"
-        );
-        require(
-            registry.getContract(registry.KEY_MIMHO_INJECT_LIQUIDITY()) != address(0),
-            "MIMHO: inject not set in registry"
-        );
+        require(registry.getContract(registry.KEY_MIMHO_TOKEN()) != address(0), "MIMHO: token not set in registry");
+        require(registry.getContract(registry.KEY_MIMHO_INJECT_LIQUIDITY()) != address(0), "MIMHO: inject not set in registry");
 
         voteId += 1;
 
@@ -292,13 +275,8 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
                                 VOTING
     //////////////////////////////////////////////////////////////*/
 
-    function voteYes() external nonReentrant whenNotPaused {
-        _vote(true);
-    }
-
-    function voteNo() external nonReentrant whenNotPaused {
-        _vote(false);
-    }
+    function voteYes() external nonReentrant whenNotPaused { _vote(true); }
+    function voteNo() external nonReentrant whenNotPaused { _vote(false); }
 
     function _vote(bool support) internal {
         require(isVotingPhase(), "MIMHO: not voting phase");
@@ -310,17 +288,13 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
 
         _votedIn[msg.sender] = voteId;
 
-        if (support) {
-            yesVotes += weight;
-        } else {
-            noVotes += weight;
-        }
+        if (support) yesVotes += weight;
+        else noVotes += weight;
 
         emit VoteCast(voteId, msg.sender, support, weight);
         _emitHubEvent(ACTION_VOTE_CAST, msg.sender, weight, abi.encode(voteId, support, weight));
     }
 
-    /// @dev Snapshot on first vote of the current voteId (lightweight and safe).
     function _snapshotWeight(address voter) internal returns (uint256) {
         if (_weightSnapshotIn[voter] != voteId) {
             address tokenAddr = registry.getContract(registry.KEY_MIMHO_TOKEN());
@@ -336,13 +310,10 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
                                FINALIZE
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Finalizes the vote after voteEnd. Anyone can call.
-    /// @dev Pushes authorization to InjectLiquidity by calling setAutoInject(true) if approved.
     function finalizeVote() external whenNotPaused {
         require(hasVoteEnded(), "MIMHO: not ended");
         require(!voteFinalized, "MIMHO: finalized");
 
-        // Registry sanity check
         address injectAddr = registry.getContract(registry.KEY_MIMHO_INJECT_LIQUIDITY());
         require(injectAddr != address(0), "MIMHO: inject not set in registry");
 
@@ -351,7 +322,6 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
         bool approved = yesVotes > noVotes;
 
         if (approved) {
-            // Authorization push: "InjectLiquidity, you're allowed (auto mode ON)."
             IMIMHOInjectLiquidity(injectAddr).setAutoInject(true);
 
             emit AutoInjectStatusChanged(true);
@@ -380,7 +350,6 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
     }
 
     function isVotingActive() public view returns (bool) {
-        // "active" includes prepare or voting
         return (isPreparePhase() || isVotingPhase());
     }
 
@@ -388,9 +357,7 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
         return voteEnd != 0 && block.timestamp >= voteEnd;
     }
 
-    function voteEndTime() external view returns (uint256) {
-        return voteEnd;
-    }
+    function voteEndTime() external view returns (uint256) { return voteEnd; }
 
     function hasVoted(address voter) external view returns (bool) {
         return _votedIn[voter] == voteId;
@@ -409,12 +376,10 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
         return IMIMHOInjectLiquidity(injectAddr).autoInjectEnabled();
     }
 
-    /// @notice Helper HUD button: what InjectLiquidity address is currently set in Registry.
     function injectLiquidityAddress() external view returns (address) {
         return registry.getContract(registry.KEY_MIMHO_INJECT_LIQUIDITY());
     }
 
-    /// @notice Helper HUD button: what Token address is currently set in Registry.
     function tokenAddress() external view returns (address) {
         return registry.getContract(registry.KEY_MIMHO_TOKEN());
     }
@@ -437,15 +402,9 @@ contract MIMHOInjectLiquidityVotingController is ReentrancyGuard, Pausable, Owna
                               RECEIVE / FALLBACK
     //////////////////////////////////////////////////////////////*/
 
-    receive() external payable {
-        revert("MIMHO: no BNB");
-    }
+    receive() external payable { revert("MIMHO: no BNB"); }
+    fallback() external payable { revert("MIMHO: invalid call"); }
 
-    fallback() external payable {
-        revert("MIMHO: invalid call");
-    }
-
-    /// @dev Resgata BNB preso acidentalmente no contrato.
     function rescueNative() external onlyDAOorOwner {
         uint256 balance = address(this).balance;
         require(balance > 0, "MIMHO: balance is zero");
