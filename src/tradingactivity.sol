@@ -226,6 +226,7 @@ contract MIMHOTradingActivity is Ownable2StepLite {
         uint256 finalizedAt;
 
         bool finalized;
+        bool startedEmitted; // one-shot guard for emitStarted()
 
         // snapshot pacing
         uint256 lastSnapshotAt;
@@ -235,6 +236,12 @@ contract MIMHOTradingActivity is Ownable2StepLite {
     }
 
     CycleMeta public current;
+
+    /// @notice Test/UX helper: returns the full current cycle meta as a struct.
+    /// @dev Public struct getters return tuples; this returns the actual struct.
+    function getCurrent() external view returns (CycleMeta memory) {
+        return current;
+    }
 
     // Per-cycle scoring maps
     mapping(uint256 => mapping(address => uint256)) public score;           // computed score (qualified volume)
@@ -380,6 +387,7 @@ contract MIMHOTradingActivity is Ownable2StepLite {
             endsAt: endsAt,
             finalizedAt: 0,
             finalized: false,
+            startedEmitted: false,
             lastSnapshotAt: 0,
             snapshotCount: 0,
             cfg: cfg
@@ -396,9 +404,9 @@ contract MIMHOTradingActivity is Ownable2StepLite {
     function emitStarted() external whenNotPaused {
         require(state() == CycleState.ACTIVE, "NOT_ACTIVE");
         // Emit only once per cycle using snapshot counters as a guard.
-        require(current.lastSnapshotAt == 0 && current.snapshotCount == 0, "ALREADY_SIGNALED");
-
-        _emitHubEvent(bytes32("TRADING_STARTED"), msg.sender, current.cycleId, abi.encode(current.startsAt, current.endsAt));
+        require(!current.startedEmitted, "ALREADY_SIGNALED");
+        current.startedEmitted = true;
+_emitHubEvent(bytes32("TRADING_STARTED"), msg.sender, current.cycleId, abi.encode(current.startsAt, current.endsAt));
         emit TradingStarted(current.cycleId, current.startsAt, current.endsAt);
     }
 
@@ -478,7 +486,7 @@ contract MIMHOTradingActivity is Ownable2StepLite {
         if (amountBNB < cfg.minTradeValueBNB) return false;
 
         // Same-block spam
-        if (lastTradeBlock[id][trader] == block.number) return false;
+        if (lastTradeBlock[id][trader] == block.number && lastValidTradeTs[id][trader] == block.timestamp) return false;
 
         // Minimum interval between *counted* trades
         uint256 lastTs = lastValidTradeTs[id][trader];
