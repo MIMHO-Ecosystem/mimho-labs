@@ -656,7 +656,7 @@ contract MIMHORegistry is IMIMHORegistry, IMIMHOProtocol, Ownable2Step {
         if (key == KEY_MARKETING_WALLET) return walletMarketing;
 
         // Alias dao Wallet
-        if (key == keccak256("MIMHO_DAO_WALLET")) return walletDAOTreasury;
+        if (key == KEY_MIMHO_DAO_WALLET) return walletDAOTreasury;
 
         return address(0);
     }
