@@ -316,13 +316,21 @@ contract MIMHOQuiz is Ownable, Pausable, ReentrancyGuard {
        DAO treasury resolver (KEY_MIMHO_DAO_WALLET preferred; fallback KEY_MIMHO_DAO)
        ============================================================ */
     function daoTreasury() public view returns (address) {
-        address w = registry.getContract(registry.KEY_MIMHO_DAO_WALLET());
-        if (w != address(0)) return w;
+    // Prefer DAO_WALLET if Registry supports it (avoid hard dependency)
+    (bool ok, bytes memory ret) =
+        address(registry).staticcall(abi.encodeWithSelector(IMIMHORegistry.KEY_MIMHO_DAO_WALLET.selector));
 
-        // Fallback: some deployments use DAO contract itself as treasury holder
-        w = registry.getContract(registry.KEY_MIMHO_DAO());
-        return w;
+    if (ok && ret.length >= 32) {
+        bytes32 keyWallet = abi.decode(ret, (bytes32));
+        if (keyWallet != bytes32(0)) {
+            address w = registry.getContract(keyWallet);
+            if (w != address(0)) return w;
+        }
     }
+
+    // Fallback: DAO contract itself
+    return registry.getContract(registry.KEY_MIMHO_DAO());
+}
 
     /* ============================================================
        Admin controls (DAO or Owner until DAO activation)
