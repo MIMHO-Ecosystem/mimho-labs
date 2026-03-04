@@ -1,0 +1,3 @@
+Root: "/mnt/c/Users/Tatiana/Documents/MIMHO_LABS", Src: Some(["src"]), Include: None, Exclude: Some(["test/", "script/", "lib/"])
+Resolving sources versions by graph ...
+Compiling 41 files with Solc 0.8.28+commit.7893614a.Linux.gcc
