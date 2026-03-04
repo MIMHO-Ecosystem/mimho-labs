@@ -1,0 +1,1300 @@
+ + [34m[Int][39m IERC20 
+    - [34m[Ext][39m balanceOf
+    - [34m[Ext][39m transfer[31m #[39m
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m isEcosystemContract
+    - [34m[Ext][39m KEY_MIMHO_TOKEN
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_DAO
+    - [34m[Ext][39m KEY_MIMHO_VERITAS
+    - [34m[Ext][39m KEY_MIMHO_LABS
+
+ + [34m[Int][39m IMIMHOVeritasPrice 
+    - [34m[Ext][39m getUSDPrice
+
+ + [34m[Int][39m IMIMHOLabs 
+    - [34m[Ext][39m isWhitelisted
+    - [34m[Ext][39m getConsultaFee
+    - [34m[Ext][39m feeCollector
+
+ + [34m[Int][39m IMIMHOAirdrop 
+    - [34m[Ext][39m version
+    - [34m[Ext][39m startNextCycle[31m #[39m
+    - [34m[Ext][39m claim[31m #[39m
+    - [34m[Ext][39m getRules
+
+ +  MIMHOAirdrop [90m(IMIMHOAirdrop, Ownable2Step, Pausable, ReentrancyGuard)[39m
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [90m[Int][39m _refreshDAO[31m #[39m
+    - [32m[Pub][39m mimhoToken
+    - [32m[Pub][39m veritas
+    - [32m[Pub][39m labs
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [34m[Ext][39m getRules
+    - [34m[Ext][39m getCycle
+    - [32m[Pub][39m isSystem
+    - [32m[Pub][39m getUserUsdValueWithCyclePrice
+    - [32m[Pub][39m getUserBonusPercent
+    - [32m[Pub][39m leafFor
+    - [32m[Pub][39m verifyEligibility
+    - [34m[Ext][39m isEligibleView
+    - [90m[Int][39m _isEligible
+    - [34m[Ext][39m startNextCycle[31m #[39m
+       - modifiers: whenNotPaused
+    - [34m[Ext][39m setCycleManualPrice[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setDefaultManualPriceUsd18[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m claim[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m setTask[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m getTaskCount
+    - [34m[Ext][39m getTaskId
+    - [34m[Ext][39m getTask
+    - [34m[Ext][39m setSystemAddress[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m setMaxPercentOfMarketing[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setMaxRewardPerUser[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m labsConsultaElegibilidade[33m ($)[39m
+    - [34m[Ext][39m [90m<Receive Ether>[39m[33m ($)[39m
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m isEcosystemContract
+    - [34m[Ext][39m KEY_MIMHO_TOKEN
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_STAKING
+    - [34m[Ext][39m KEY_MIMHO_CERTIFY
+    - [34m[Ext][39m KEY_MIMHO_MART
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IMIMHOCertify 
+    - [34m[Ext][39m recordBurn[31m #[39m
+
+ + [34m[Int][39m IMIMHOMart 
+    - [34m[Ext][39m mintBurnBadge[31m #[39m
+
+ +  MIMHOBurnGovernanceVault [90m(ReentrancyGuard, Pausable)[39m
+    - [34m[Ext][39m transferOwnership[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m acceptOwnership[31m #[39m
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m DAO_CONTRACT
+    - [32m[Pub][39m contractType
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [32m[Pub][39m mimhoToken
+    - [90m[Int][39m _token
+    - [34m[Ext][39m register[31m #[39m
+       - modifiers: whenNotPaused
+    - [90m[Int][39m _isBlocked
+    - [90m[Int][39m _isEligibleAddress
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [34m[Ext][39m setConfig[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setBlockedWallet[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m rescueBNB[31m #[39m
+       - modifiers: onlyOwner,nonReentrant
+    - [34m[Ext][39m depositVotingPower[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m withdrawVotingPower[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m depositForBurn[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [90m[Int][39m _maybeOpenCycle[31m #[39m
+    - [34m[Ext][39m broadcastCycleOpened[31m #[39m
+       - modifiers: whenNotPaused
+    - [34m[Ext][39m vote[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m finalizeCycle[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [32m[Pub][39m getClaimableAmount
+    - [34m[Ext][39m claim[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m closeExpiredCycle[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [90m[Int][39m _executeBurnOrRedirect[31m #[39m
+    - [34m[Ext][39m burnVoluntarily[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [90m[Int][39m _bestEffortCertifyAndMint[31m #[39m
+    - [34m[Ext][39m getStatus
+    - [34m[Ext][39m getConfig
+    - [34m[Ext][39m getCycle
+    - [34m[Ext][39m isEligible
+    - [34m[Ext][39m getVotingPower
+    - [34m[Ext][39m [90m<Receive Ether>[39m[33m ($)[39m
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_REPUTATION
+    - [34m[Ext][39m KEY_MIMHO_TOKEN
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IERC20 
+    - [34m[Ext][39m balanceOf
+
+ + [34m[Int][39m IMIMHOReputationBonus 
+    - [34m[Ext][39m getBonusPercent
+
+ +  MIMHODaoGovernance 
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [32m[Pub][39m contractType
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m setRegistry[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setElectionParams[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m registerHolding[31m #[39m
+       - modifiers: whenNotPaused
+    - [90m[Int][39m _checkEligibility
+    - [34m[Ext][39m registerCandidate[31m #[39m
+       - modifiers: whenNotPaused,onlyBeforeElection
+    - [34m[Ext][39m candidatesCount
+    - [34m[Ext][39m candidateAt
+    - [34m[Ext][39m getCandidates
+    - [34m[Ext][39m startElection[31m #[39m
+       - modifiers: onlyDAOorOwner,onlyBeforeElection
+    - [34m[Ext][39m finishElection[31m #[39m
+       - modifiers: whenNotPaused
+    - [34m[Ext][39m vote[31m #[39m
+       - modifiers: whenNotPaused,onlyDuringElection
+    - [90m[Int][39m _getBonusPercent
+    - [34m[Ext][39m impeach[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m getElectionState
+    - [34m[Ext][39m getVotes
+    - [34m[Ext][39m previewRanking
+    - [90m[Int][39m _rankCandidates
+    - [90m[Int][39m _sqrt
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [34m[Ext][39m [90m<Receive Ether>[39m[33m ($)[39m
+    - [34m[Ext][39m [90m<Fallback>[39m[33m ($)[39m
+    - [34m[Ext][39m rescueNative[31m #[39m
+       - modifiers: onlyDAOorOwner
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m isEcosystemContract
+
+ + [34m[Int][39m IMIMHOProtocol 
+    - [34m[Ext][39m contractName
+    - [34m[Ext][39m contractType
+    - [34m[Ext][39m version
+    - [34m[Ext][39m paused
+    - [34m[Ext][39m isObservable
+    - [34m[Ext][39m getActionType
+    - [34m[Ext][39m getRiskLevel
+    - [34m[Ext][39m isFinalized
+    - [34m[Ext][39m getFinancialImpact
+    - [34m[Ext][39m getBoostValue
+    - [34m[Ext][39m onExternalAction[31m #[39m
+
+ +  MIMHOEventsHub [90m(IMIMHOEventsHub, IMIMHOProtocol)[39m
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [90m[Int][39m _clipCalldata
+    - [34m[Ext][39m emitEvent[31m #[39m
+       - modifiers: whenNotPaused,onlyEcosystemEmitter
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m updateRegistry[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m blacklistEmitter[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m paused
+    - [34m[Ext][39m canEmit
+    - [34m[Ext][39m hubStatus
+    - [34m[Ext][39m contractName
+    - [34m[Ext][39m contractType
+    - [34m[Ext][39m version
+    - [34m[Ext][39m isObservable
+    - [34m[Ext][39m getActionType
+    - [34m[Ext][39m getRiskLevel
+    - [34m[Ext][39m isFinalized
+    - [34m[Ext][39m getFinancialImpact
+    - [34m[Ext][39m getBoostValue
+    - [34m[Ext][39m onExternalAction
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m isEcosystemContract
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ +  MIMHOHolderDistributionVault [90m(Ownable2Step, Pausable, ReentrancyGuard)[39m
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [32m[Pub][39m contractType
+    - [90m[Int][39m _eventsHub
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m excludeAddress[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m deposit[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [34m[Ext][39m openRound[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m closeRound[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m claim[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [34m[Ext][39m getRound
+    - [34m[Ext][39m vaultBalance
+
+ + [34m[Int][39m IERC20 
+    - [34m[Ext][39m balanceOf
+    - [34m[Ext][39m transfer[31m #[39m
+    - [34m[Ext][39m transferFrom[31m #[39m
+    - [34m[Ext][39m approve[31m #[39m
+    - [34m[Ext][39m allowance
+
+ + [34m[Int][39m IUniswapV2Router02 
+    - [34m[Ext][39m addLiquidityETH[33m ($)[39m
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_TOKEN
+    - [34m[Ext][39m KEY_MIMHO_DEX
+    - [34m[Ext][39m KEY_MIMHO_DAO
+    - [34m[Ext][39m KEY_MIMHO_VOTING_CONTROLLER
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ +  Ownable2StepLite 
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [34m[Ext][39m transferOwnership[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m acceptOwnership[31m #[39m
+
+ +  ReentrancyGuardLite 
+
+ +  PausableLite 
+    - [90m[Int][39m _pause[31m #[39m
+    - [90m[Int][39m _unpause[31m #[39m
+
+ +  MIMHOInjectLiquidity [90m(Ownable2StepLite, ReentrancyGuardLite, PausableLite)[39m
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+       - modifiers: Ownable2StepLite
+    - [34m[Ext][39m icontratoMimho
+    - [32m[Pub][39m contractType
+    - [34m[Ext][39m version
+    - [34m[Ext][39m [90m<Receive Ether>[39m[33m ($)[39m
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setAutoInject[31m #[39m
+       - modifiers: onlyVotingControllerOrDAOorOwner
+    - [34m[Ext][39m setInjectionCooldown[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setFailsafeDelay[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m triggerFailsafe[31m #[39m
+       - modifiers: whenNotPaused
+    - [34m[Ext][39m depositTokens[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [34m[Ext][39m injectLiquidity[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [34m[Ext][39m recoverERC20[31m #[39m
+       - modifiers: onlyDAOorOwner,nonReentrant
+    - [34m[Ext][39m availableMIMHO
+    - [34m[Ext][39m availableBNB
+    - [34m[Ext][39m votingController
+    - [34m[Ext][39m canInjectNow
+    - [90m[Int][39m _touch[31m #[39m
+    - [90m[Int][39m _mimhoToken
+    - [90m[Int][39m _dexRouter
+    - [90m[Int][39m _votingController
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [90m[Int][39m _forceApprove[31m #[39m
+
+ + [34m[Int][39m IERC20 
+    - [34m[Ext][39m balanceOf
+    - [34m[Ext][39m transfer[31m #[39m
+    - [34m[Ext][39m approve[31m #[39m
+
+ + [34m[Int][39m IPancakeRouterLike 
+    - [34m[Ext][39m factory
+    - [34m[Ext][39m WETH
+    - [34m[Ext][39m addLiquidityETH[33m ($)[39m
+
+ + [34m[Int][39m IPancakeFactoryLike 
+    - [34m[Ext][39m getPair
+    - [34m[Ext][39m createPair[31m #[39m
+
+ + [34m[Int][39m IERC20Lite 
+    - [34m[Ext][39m transfer[31m #[39m
+    - [34m[Ext][39m balanceOf
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_INJECT_LIQUIDITY
+    - [34m[Ext][39m isEcosystemContract
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IMIMHOPresale 
+    - [34m[Ext][39m presalePriceWeiPerToken
+
+ +  MIMHOLiquidityBootstrapper [90m(Ownable2Step, Pausable, ReentrancyGuard)[39m
+    - [32m[Pub][39m contractType
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m receivePresaleBNB[33m ($)[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [90m[Int][39m _bootstrap[31m #[39m
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [34m[Ext][39m isFinalized
+    - [34m[Ext][39m mimhoBalance
+    - [34m[Ext][39m currentPair
+    - [34m[Ext][39m [90m<Receive Ether>[39m[33m ($)[39m
+
+ + [34m[Int][39m IERC20 
+    - [34m[Ext][39m totalSupply
+    - [34m[Ext][39m balanceOf
+    - [34m[Ext][39m allowance
+    - [34m[Ext][39m approve[31m #[39m
+    - [34m[Ext][39m transfer[31m #[39m
+    - [34m[Ext][39m transferFrom[31m #[39m
+    - [34m[Ext][39m decimals
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_TOKEN
+    - [34m[Ext][39m KEY_MIMHO_MARKETING_WALLET
+    - [34m[Ext][39m KEY_MIMHO_INJECT_LIQUIDITY
+
+ +  ReentrancyGuard 
+
+ +  Pausable 
+    - [90m[Int][39m _pause[31m #[39m
+       - modifiers: whenNotPaused
+    - [90m[Int][39m _unpause[31m #[39m
+       - modifiers: whenPaused
+
+ +  Ownable2StepLite 
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [34m[Ext][39m transferOwnership[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m acceptOwnership[31m #[39m
+
+ +  MIMHOLocker [90m(Ownable2StepLite, Pausable, ReentrancyGuard)[39m
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [32m[Pub][39m contractType
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m initFeeParams[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m scheduleFeeParamsUpdate[31m #[39m
+       - modifiers: onlyDAO,whenNotPaused
+    - [34m[Ext][39m executeFeeParamsUpdate[31m #[39m
+       - modifiers: onlyDAO,whenNotPaused
+    - [34m[Ext][39m createPublicLock[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m extendPublicLock[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m releasePublicLock[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m createDAOTreasuryLock[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused,onlyDAOorOwner
+    - [34m[Ext][39m releaseDAOTreasuryLock[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused,onlyDAO
+    - [34m[Ext][39m createCEXReserveLock[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused,onlyDAOorOwner
+    - [34m[Ext][39m approveCEXRelease[31m #[39m
+       - modifiers: onlyDAO,whenNotPaused
+    - [34m[Ext][39m executeCEXRelease[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused,onlyDAO
+    - [32m[Pub][39m getFeeEstimate
+    - [90m[Int][39m _ceilWeeks
+    - [90m[Int][39m _mimhoToken
+    - [90m[Int][39m _marketingWallet
+    - [90m[Int][39m _injectLiquidityContract
+    - [90m[Int][39m _daoPayoutAddressOrFallback
+    - [90m[Int][39m _collectAndDistributeFee[31m #[39m
+    - [34m[Ext][39m getLockInfo
+    - [32m[Pub][39m isUnlockable
+    - [90m[Int][39m _isUnlockableTime
+    - [34m[Ext][39m userLockCount
+    - [34m[Ext][39m userLockIdAt
+    - [34m[Ext][39m getUserLocks
+    - [34m[Ext][39m recoverTokens[31m #[39m
+       - modifiers: onlyDAOorOwner,nonReentrant
+    - [90m[Int][39m _createLock[31m #[39m
+
+ + [34m[Int][39m IERC2981 
+    - [34m[Ext][39m royaltyInfo
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m isEcosystemContract
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_MART
+    - [34m[Ext][39m KEY_MIMHO_DAO
+    - [34m[Ext][39m KEY_MARKETING_WALLET
+    - [34m[Ext][39m KEY_MIMHO_INJECT_LIQUIDITY
+    - [34m[Ext][39m KEY_MIMHO_STAKING
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ +  MIMHOMarketplace [90m(Ownable2Step, ReentrancyGuard, Pausable, IERC721Receiver, IERC1155Receiver)[39m
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [34m[Ext][39m listNFT[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [34m[Ext][39m listEcosystemSale[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [34m[Ext][39m buyNFT[33m ($)[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [34m[Ext][39m cancelListing[31m #[39m
+       - modifiers: nonReentrant
+    - [34m[Ext][39m claimPending[31m #[39m
+       - modifiers: nonReentrant
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [90m[Int][39m _eventsHubAddr
+    - [90m[Int][39m _mimhoMart
+    - [90m[Int][39m _daoWallet
+    - [90m[Int][39m _marketing
+    - [90m[Int][39m _injectLiquidity
+    - [90m[Int][39m _staking
+    - [90m[Int][39m _liquidityOrStaking
+    - [90m[Int][39m _isMIMHONFT
+    - [90m[Int][39m _supportsERC2981
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [34m[Ext][39m onERC721Received
+    - [34m[Ext][39m onERC1155Received
+    - [34m[Ext][39m onERC1155BatchReceived
+    - [34m[Ext][39m supportsInterface
+    - [34m[Ext][39m [90m<Receive Ether>[39m[33m ($)[39m
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_DAO
+    - [34m[Ext][39m KEY_MIMHO_TOKEN
+    - [34m[Ext][39m KEY_MIMHO_STAKING
+    - [34m[Ext][39m KEY_MIMHO_DAO_WALLET
+    - [34m[Ext][39m isEcosystemContract
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ +  MIMHOMart [90m(ERC721, ERC721Burnable, ReentrancyGuard, Pausable)[39m
+    - [32m[Pub][39m contractType
+    - [90m[Int][39m _eventsHub
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [90m[Int][39m _hasMintTypePermission
+    - [34m[Ext][39m setMintTypePermissions[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setBaseURI[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setTokenURI[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [32m[Pub][39m tokenURI
+    - [90m[Int][39m _mintInternal[31m #[39m
+    - [34m[Ext][39m mint[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant,onlyEcosystemOrDAOorOwner
+    - [34m[Ext][39m mintBurnBadge[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant,onlyEcosystemOrDAOorOwner
+    - [32m[Pub][39m paymentToken
+    - [32m[Pub][39m daoWallet
+    - [32m[Pub][39m stakingReceiver
+    - [34m[Ext][39m list[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [34m[Ext][39m cancelListing[31m #[39m
+       - modifiers: nonReentrant
+    - [34m[Ext][39m buy[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m syncDAOFromRegistry[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m transferOwner[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m isListed
+    - [34m[Ext][39m getListing
+    - [34m[Ext][39m royaltyPreview
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+       - modifiers: ERC721
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_TOKEN
+    - [34m[Ext][39m KEY_MIMHO_VESTING
+    - [34m[Ext][39m KEY_MIMHO_LIQUIDITY_BOOTSTRAPER
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IMIMHOVesting 
+    - [34m[Ext][39m registerPresaleVesting[31m #[39m
+
+ + [34m[Int][39m IMIMHOLiquidityBootstrapper 
+    - [34m[Ext][39m receivePresaleBNB[33m ($)[39m
+
+ +  MIMHOPresale [90m(Ownable2Step, Pausable, ReentrancyGuard)[39m
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [34m[Ext][39m getDesignPhilosophy
+    - [34m[Ext][39m contractType
+    - [34m[Ext][39m timeNow
+    - [32m[Pub][39m saleActive
+    - [34m[Ext][39m remainingCapWei
+    - [34m[Ext][39m remainingTokens
+    - [32m[Pub][39m quoteTokens
+    - [34m[Ext][39m presalePriceWeiPerToken
+    - [34m[Ext][39m requiredTokenDeposit
+    - [34m[Ext][39m syncFromRegistry[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [90m[Int][39m _syncFromRegistry[31m #[39m
+    - [34m[Ext][39m setLiquidityBootstrapper[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setVesting[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m [90m<Receive Ether>[39m[33m ($)[39m
+    - [32m[Pub][39m buy[33m ($)[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m finalize[31m #[39m
+       - modifiers: nonReentrant
+    - [34m[Ext][39m pushFunds[31m #[39m
+       - modifiers: nonReentrant
+    - [34m[Ext][39m claimPendingNative[31m #[39m
+       - modifiers: nonReentrant
+    - [34m[Ext][39m rescueBNB[31m #[39m
+       - modifiers: onlyDAOorOwner,nonReentrant
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+
+ + [34m[Int][39m IERC20 
+    - [34m[Ext][39m transfer[31m #[39m
+    - [34m[Ext][39m transferFrom[31m #[39m
+    - [34m[Ext][39m balanceOf
+    - [34m[Ext][39m allowance
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m KEY_MIMHO_TOKEN
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_DAO
+    - [34m[Ext][39m KEY_MIMHO_DAO_WALLET
+    - [34m[Ext][39m KEY_MIMHO_CERTIFY
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IMIMHOCertify 
+    - [34m[Ext][39m certify[31m #[39m
+
+ +  ReentrancyGuard 
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+
+ +  Ownable 
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [34m[Ext][39m transferOwnership[31m #[39m
+       - modifiers: onlyOwner
+
+ +  Pausable 
+    - [90m[Int][39m _pause[31m #[39m
+       - modifiers: whenNotPaused
+    - [90m[Int][39m _unpause[31m #[39m
+       - modifiers: whenPaused
+
+ +  MIMHOQuiz [90m(Ownable, Pausable, ReentrancyGuard)[39m
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+       - modifiers: Ownable
+    - [32m[Pub][39m contractType
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [32m[Pub][39m mimhoToken
+    - [32m[Pub][39m daoTreasury
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setRewardPerCycle[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setProgramActive[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m createProgram[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m fund[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [32m[Pub][39m currentCycleId
+    - [32m[Pub][39m cycleEndTimestamp
+    - [34m[Ext][39m timeUntilNextCycle
+    - [34m[Ext][39m remainingPool
+    - [34m[Ext][39m canReceiveReward
+    - [34m[Ext][39m completeQuiz[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [34m[Ext][39m closeCycle[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [34m[Ext][39m claimReward[31m #[39m
+       - modifiers: whenNotPaused,nonReentrant
+    - [90m[Int][39m _bestEffortCertify[31m #[39m
+    - [90m[Int][39m _ensureCycleInitialized[31m #[39m
+    - [34m[Ext][39m isFailsafeEligible
+    - [34m[Ext][39m timeUntilFailsafe
+    - [34m[Ext][39m triggerFailsafe[31m #[39m
+       - modifiers: nonReentrant
+    - [90m[Int][39m _touch[31m #[39m
+    - [34m[Ext][39m [90m<Receive Ether>[39m[33m ($)[39m
+    - [34m[Ext][39m [90m<Fallback>[39m[33m ($)[39m
+    - [34m[Ext][39m rescueNative[31m #[39m
+       - modifiers: onlyDAOorOwner
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m isEcosystemContract
+
+ + [34m[Int][39m IMIMHOProtocol 
+    - [34m[Ext][39m contractName
+    - [34m[Ext][39m contractType
+    - [34m[Ext][39m version
+    - [34m[Ext][39m paused
+    - [34m[Ext][39m isObservable
+    - [34m[Ext][39m getActionType
+    - [34m[Ext][39m getRiskLevel
+    - [34m[Ext][39m isFinalized
+    - [34m[Ext][39m getFinancialImpact
+    - [34m[Ext][39m getBoostValue
+    - [34m[Ext][39m onExternalAction[31m #[39m
+
+ +  MIMHORegistry [90m(IMIMHORegistry, IMIMHOProtocol, Ownable2Step)[39m
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner,whenNotPaused
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner,whenNotPaused
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setEventsHub[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [90m[Int][39m _setAddress[31m #[39m
+    - [34m[Ext][39m setMIMHOToken[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOSecurityWallet[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOVeritas[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOAudit[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOGasSaver[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOObserver[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOStaking[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOPresale[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOVesting[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOBurn[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOLocker[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOAirdrop[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOInvoice[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOInjectLiquidity[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOTradingActivity[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOLoans[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOBet[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOLottery[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOQuiz[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHORaffle[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOAuctioner[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOPulse[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOMart[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOMarketplace[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOGateway[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHODEX[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOScore[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOPersona[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOBank[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOReceive[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOPIX[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOCertify[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOVotingController[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOStrategyHub[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOLiquidityBootstraper[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setMIMHOHolderDistribution[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletDAOTreasury[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletMarketing[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletTechnical[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletDonation[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletBurn[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletLPReserve[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletLiquidityReserve[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletSecurityReserve[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletBank[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletLocker[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletLabs[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletAirdrops[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletGame[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setWalletMart[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m setPartnerService[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m isPartnerAuthorized
+    - [34m[Ext][39m getPartnerService
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m isEcosystemContract
+    - [34m[Ext][39m checkWalletsConfigured
+    - [34m[Ext][39m checkCoreConfigured
+    - [34m[Ext][39m getWallets
+    - [34m[Ext][39m contractName
+    - [34m[Ext][39m contractType
+    - [34m[Ext][39m version
+    - [34m[Ext][39m isObservable
+    - [34m[Ext][39m getActionType
+    - [34m[Ext][39m getRiskLevel
+    - [34m[Ext][39m isFinalized
+    - [34m[Ext][39m getFinancialImpact
+    - [34m[Ext][39m getBoostValue
+    - [34m[Ext][39m onExternalAction[31m #[39m
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m KEY_MIMHO_TOKEN
+    - [34m[Ext][39m KEY_MIMHO_DAO
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_STRATEGY_HUB
+    - [34m[Ext][39m KEY_MIMHO_SCORE
+    - [34m[Ext][39m KEY_MIMHO_SECURITY_WALLET
+    - [34m[Ext][39m KEY_MIMHO_MART
+    - [34m[Ext][39m KEY_MIMHO_BET
+    - [34m[Ext][39m KEY_MIMHO_GATEWAY
+    - [34m[Ext][39m KEY_MIMHO_VERITAS
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IMIMHOScore 
+    - [34m[Ext][39m getBoostValue
+
+ + [34m[Int][39m IMIMHOStrategyHub 
+    - [34m[Ext][39m getBoostValue
+
+ + [34m[Int][39m IMIMHOSecurityWallet 
+    - [34m[Ext][39m isSecurityActive
+
+ + [34m[Int][39m IMIMHOMartSpend 
+    - [34m[Ext][39m totalSpentMIMHO
+
+ + [34m[Int][39m IMIMHOBet 
+    - [34m[Ext][39m isActiveBettor
+
+ + [34m[Int][39m IContratoMIMHO 
+    - [34m[Ext][39m isContratoMIMHO
+    - [34m[Ext][39m tipoContrato
+    - [34m[Ext][39m nomeProjeto
+
+ + [34m[Int][39m IMIMHOProtocol 
+    - [34m[Ext][39m contractName
+    - [34m[Ext][39m contractType
+    - [34m[Ext][39m version
+    - [34m[Ext][39m paused
+    - [34m[Ext][39m isObservable
+    - [34m[Ext][39m getActionType
+    - [34m[Ext][39m getRiskLevel
+    - [34m[Ext][39m isFinalized
+    - [34m[Ext][39m getFinancialImpact
+    - [34m[Ext][39m getBoostValue
+    - [34m[Ext][39m onExternalAction[31m #[39m
+
+ +  MIMHOStaking [90m(Ownable2Step, ReentrancyGuard, Pausable, IContratoMIMHO, IMIMHOProtocol)[39m
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [34m[Ext][39m isContratoMIMHO
+    - [34m[Ext][39m tipoContrato
+    - [34m[Ext][39m nomeProjeto
+    - [34m[Ext][39m contractName
+    - [34m[Ext][39m contractType
+    - [34m[Ext][39m version
+    - [32m[Pub][39m paused
+    - [34m[Ext][39m isObservable
+    - [34m[Ext][39m getActionType
+    - [34m[Ext][39m getRiskLevel
+    - [34m[Ext][39m isFinalized
+    - [34m[Ext][39m getFinancialImpact
+    - [34m[Ext][39m getBoostValue
+    - [34m[Ext][39m onExternalAction
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner,whenNotPaused
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner,whenNotPaused
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m fundRewards[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m syncRewardsFromBalance[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m stake[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m unstake[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m claim[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m setReinvest[31m #[39m
+       - modifiers: whenNotPaused
+    - [34m[Ext][39m setBlacklist[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setParams[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setPromisedPhase[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m onL2Sync[31m #[39m
+       - modifiers: whenNotPaused
+    - [34m[Ext][39m getConfig
+    - [34m[Ext][39m getStats
+    - [34m[Ext][39m getUser
+    - [34m[Ext][39m pendingReward
+    - [90m[Int][39m _accrue[31m #[39m
+    - [90m[Int][39m _earned
+    - [90m[Int][39m _earnedView
+    - [90m[Int][39m _computeBoostBps
+    - [31m[Prv][39m _checkLocalBoosts
+    - [90m[Int][39m _rollWeekIfNeeded[31m #[39m
+    - [90m[Int][39m _rollYearIfNeeded[31m #[39m
+    - [90m[Int][39m _startOfWeek
+    - [90m[Int][39m _startOfYear
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [90m[Int][39m _setCfg[31m #[39m
+    - [34m[Ext][39m [90m<Receive Ether>[39m[33m ($)[39m
+    - [34m[Ext][39m [90m<Fallback>[39m[33m ($)[39m
+    - [34m[Ext][39m rescueNative[31m #[39m
+       - modifiers: onlyDAOorOwner
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_DAO
+    - [34m[Ext][39m isEcosystemContract
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IERC721BalanceOnly 
+    - [34m[Ext][39m balanceOf
+
+ +  MIMHOStrategyHub [90m(Pausable)[39m
+    - [32m[Pub][39m contractType
+    - [90m[Int][39m _eventsHub
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [34m[Ext][39m setContextCap[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setNftActive[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setNftBonus[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [32m[Pub][39m getContextCap
+    - [34m[Ext][39m getNftBonus
+    - [34m[Ext][39m getUserBonusBps
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m syncDAOFromRegistry[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m transferOwner[31m #[39m
+       - modifiers: onlyOwner
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IERC20 
+    - [34m[Ext][39m name
+    - [34m[Ext][39m symbol
+    - [34m[Ext][39m decimals
+    - [34m[Ext][39m totalSupply
+    - [34m[Ext][39m balanceOf
+    - [34m[Ext][39m transfer[31m #[39m
+    - [34m[Ext][39m allowance
+    - [34m[Ext][39m approve[31m #[39m
+    - [34m[Ext][39m transferFrom[31m #[39m
+
+ +  MIMHO [90m(IERC20)[39m
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [34m[Ext][39m name
+    - [34m[Ext][39m symbol
+    - [34m[Ext][39m decimals
+    - [32m[Pub][39m contractType
+    - [90m[Int][39m _eventsHub
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [34m[Ext][39m totalSupply
+    - [34m[Ext][39m balanceOf
+    - [34m[Ext][39m allowance
+    - [34m[Ext][39m isPaused
+    - [34m[Ext][39m isTradingEnabled
+    - [34m[Ext][39m getRegistry
+    - [34m[Ext][39m circulatingSupply
+    - [32m[Pub][39m burnFloorReached
+    - [32m[Pub][39m maxBuyActive
+    - [34m[Ext][39m approve[31m #[39m
+    - [34m[Ext][39m transfer[31m #[39m
+       - modifiers: notPaused
+    - [34m[Ext][39m transferFrom[31m #[39m
+       - modifiers: notPaused
+    - [90m[Int][39m _approve[31m #[39m
+    - [31m[Prv][39m _getFeeValues
+    - [90m[Int][39m _transfer[31m #[39m
+    - [34m[Ext][39m enableTrading[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m pauseEmergency[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m setRegistry[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setAMMPair[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setFeeExempt[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m transferOwnership[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m renounceIfReady[31m #[39m
+    - [34m[Ext][39m recoverTokens[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m [90m<Receive Ether>[39m[33m ($)[39m
+    - [34m[Ext][39m recoverNative[31m #[39m
+       - modifiers: onlyDAOorOwner
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m isEcosystemContract
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_DAO
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ +  Ownable2StepLite 
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [32m[Pub][39m owner
+    - [32m[Pub][39m pendingOwner
+    - [34m[Ext][39m transferOwnership[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m acceptOwnership[31m #[39m
+
+ +  MIMHOTradingActivity [90m(Ownable2StepLite)[39m
+    - [32m[Pub][39m contractType
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m getCurrent
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [34m[Ext][39m setRegistry[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [32m[Pub][39m state
+    - [34m[Ext][39m timeToStart
+    - [34m[Ext][39m timeToEnd
+    - [34m[Ext][39m announceCycle[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m emitStarted[31m #[39m
+       - modifiers: whenNotPaused
+    - [34m[Ext][39m finalize[31m #[39m
+       - modifiers: whenNotPaused
+    - [34m[Ext][39m reportTrade[31m #[39m
+       - modifiers: onlyEcosystemReporter,whenNotPaused
+    - [90m[Int][39m _shouldCountTrade
+    - [34m[Ext][39m emitSnapshot[31m #[39m
+       - modifiers: whenNotPaused
+    - [34m[Ext][39m getParticipant
+    - [34m[Ext][39m getCurrentConfig
+    - [34m[Ext][39m recoverTokens[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m [90m<Receive Ether>[39m[33m ($)[39m
+    - [34m[Ext][39m [90m<Fallback>[39m[33m ($)[39m
+    - [34m[Ext][39m rescueNative[31m #[39m
+       - modifiers: onlyDAOorOwner
+
+ + [34m[Int][39m IERC20Minimal 
+    - [34m[Ext][39m balanceOf
+    - [34m[Ext][39m transfer[31m #[39m
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_DAO
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ +  Ownable2StepLite 
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [34m[Ext][39m transferOwnership[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m acceptOwnership[31m #[39m
+
+ +  ReentrancyGuardLite 
+
+ +  MIMHOVesting [90m(Ownable2StepLite, ReentrancyGuardLite)[39m
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m refreshDAOFromRegistry[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m setPresaleContract[31m #[39m
+       - modifiers: onlyDAOorOwner,onlyConfigMode
+    - [34m[Ext][39m setEcosystemReceiver[31m #[39m
+       - modifiers: onlyDAOorOwner,onlyConfigMode
+    - [34m[Ext][39m finalize[31m #[39m
+       - modifiers: onlyDAOorOwner,onlyConfigMode
+    - [34m[Ext][39m initFounderAllocation[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [32m[Pub][39m founderClaimableNow
+    - [32m[Pub][39m founderNextClaimTime
+    - [34m[Ext][39m claimFounder[31m #[39m
+       - modifiers: nonReentrant,notPaused
+    - [34m[Ext][39m registerPresaleVesting[31m #[39m
+       - modifiers: onlyPresale,onlyConfigMode
+    - [34m[Ext][39m getVestingInfo
+    - [34m[Ext][39m totalClaimed
+    - [34m[Ext][39m remaining
+    - [32m[Pub][39m claimableNow
+    - [34m[Ext][39m nextClaimTime
+    - [34m[Ext][39m claimPresale[31m #[39m
+       - modifiers: nonReentrant,notPaused
+    - [34m[Ext][39m registerMarketingVesting[31m #[39m
+       - modifiers: onlyDAOorOwner,onlyConfigMode
+    - [32m[Pub][39m marketingClaimableNow
+    - [34m[Ext][39m marketingNextClaimTime
+    - [34m[Ext][39m getMarketingInfo
+    - [34m[Ext][39m claimMarketing[31m #[39m
+       - modifiers: nonReentrant,notPaused
+    - [34m[Ext][39m initEcosystem[31m #[39m
+       - modifiers: onlyDAOorOwner,onlyConfigMode
+    - [32m[Pub][39m ecosystemClaimableNow
+    - [34m[Ext][39m ecosystemNextClaimTime
+    - [34m[Ext][39m claimEcosystem[31m #[39m
+       - modifiers: nonReentrant,notPaused
+    - [34m[Ext][39m contractStatus
+    - [34m[Ext][39m balances
+    - [34m[Ext][39m recoverERC20[31m #[39m
+       - modifiers: onlyDAOorOwner,nonReentrant
+
+ + [34m[Int][39m IMIMHORegistry 
+    - [34m[Ext][39m getContract
+    - [34m[Ext][39m KEY_MIMHO_TOKEN
+    - [34m[Ext][39m KEY_MIMHO_INJECT_LIQUIDITY
+    - [34m[Ext][39m KEY_MIMHO_EVENTS_HUB
+    - [34m[Ext][39m KEY_MIMHO_DAO
+
+ + [34m[Int][39m IMIMHOEventsHub 
+    - [34m[Ext][39m emitEvent[31m #[39m
+
+ + [34m[Int][39m IERC20Like 
+    - [34m[Ext][39m balanceOf
+
+ + [34m[Int][39m IMIMHOInjectLiquidity 
+    - [34m[Ext][39m setAutoInject[31m #[39m
+    - [34m[Ext][39m autoInjectEnabled
+
+ +  MIMHOInjectLiquidityVotingController [90m(ReentrancyGuard, Pausable, Ownable2Step)[39m
+    - [32m[Pub][39m contractType
+    - [34m[Ext][39m setDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [34m[Ext][39m activateDAO[31m #[39m
+       - modifiers: onlyOwner
+    - [32m[Pub][39m [90m<Constructor>[39m[31m #[39m
+    - [90m[Int][39m _emitHubEvent[31m #[39m
+    - [34m[Ext][39m setMinBalance[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m setVoteCooldown[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m startVote[31m #[39m
+       - modifiers: onlyDAOorOwner,whenNotPaused
+    - [34m[Ext][39m voteYes[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [34m[Ext][39m voteNo[31m #[39m
+       - modifiers: nonReentrant,whenNotPaused
+    - [90m[Int][39m _vote[31m #[39m
+    - [90m[Int][39m _snapshotWeight[31m #[39m
+    - [34m[Ext][39m finalizeVote[31m #[39m
+       - modifiers: whenNotPaused
+    - [32m[Pub][39m isPreparePhase
+    - [32m[Pub][39m isVotingPhase
+    - [32m[Pub][39m isVotingActive
+    - [32m[Pub][39m hasVoteEnded
+    - [34m[Ext][39m voteEndTime
+    - [34m[Ext][39m hasVoted
+    - [32m[Pub][39m canVote
+    - [34m[Ext][39m currentAutoInjectStatus
+    - [34m[Ext][39m injectLiquidityAddress
+    - [34m[Ext][39m tokenAddress
+    - [34m[Ext][39m pauseEmergencial[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m unpause[31m #[39m
+       - modifiers: onlyDAOorOwner
+    - [34m[Ext][39m [90m<Receive Ether>[39m[33m ($)[39m
+    - [34m[Ext][39m [90m<Fallback>[39m[33m ($)[39m
+    - [34m[Ext][39m rescueNative[31m #[39m
+       - modifiers: onlyDAOorOwner
+
+
+[33m ($)[39m = payable function
+[31m #[39m = non-constant function
+  
