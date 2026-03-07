@@ -418,33 +418,34 @@ contract MIMHOVesting is Ownable2StepLite, ReentrancyGuardLite {
      * @param startTimestamp when vesting begins (typically purchase timestamp or TGE timestamp)
      */
     function registerPresaleVesting(
-        address beneficiary,
-        uint256 totalPurchasedTokens,
-        uint16 tgeBps,
-        uint16 weeklyBps,
-        uint64 startTimestamp
-    ) external onlyPresale onlyConfigMode {
-        require(beneficiary != address(0), "ZERO_ADDR");
-        require(totalPurchasedTokens > 0, "ZERO_AMOUNT");
-        require(tgeBps <= 10_000, "BAD_TGE_BPS");
-        require(weeklyBps > 0 && weeklyBps <= 10_000, "BAD_WEEKLY_BPS");
-        require(startTimestamp > 0, "BAD_START");
+    address beneficiary,
+    uint256 totalPurchasedTokens,
+    uint16 tgeBps,
+    uint16 weeklyBps,
+    uint64 startTimestamp
+) external onlyPresale onlyConfigMode {
+    require(beneficiary != address(0), "ZERO_ADDR");
+    require(totalPurchasedTokens > 0, "ZERO_AMOUNT");
+    require(tgeBps <= 10_000, "BAD_TGE_BPS");
+    require(weeklyBps > 0 && weeklyBps <= 10_000, "BAD_WEEKLY_BPS");
+    require(startTimestamp > 0, "BAD_START");
 
-        PresalePosition storage p = _presale[beneficiary];
-        require(!p.exists, "ALREADY_REGISTERED");
+    PresalePosition storage p = _presale[beneficiary];
 
-        // Store minimal required fields (+ tgeBps, exists)
+    if (!p.exists) {
+        p.exists = true;
         p.totalPurchased = totalPurchasedTokens;
         p.totalClaimed = 0;
         p.startTimestamp = startTimestamp;
         p.weeklyBps = weeklyBps;
         p.lastClaimTimestamp = startTimestamp;
-        p.tgeBps = tgeBps;
-        p.exists = true;
-
-        emit PresaleVestingRegistered(beneficiary, totalPurchasedTokens, tgeBps, weeklyBps, startTimestamp);
-        _emitHubEvent(A_PRESALE_REG, msg.sender, totalPurchasedTokens, abi.encode(beneficiary, tgeBps, weeklyBps, startTimestamp));
+    } else {
+        p.totalPurchased += totalPurchasedTokens;
     }
+
+    emit PresaleVestingRegistered(beneficiary, totalPurchasedTokens, tgeBps, weeklyBps, startTimestamp);
+    _emitHubEvent(A_PRESALE_REG, msg.sender, totalPurchasedTokens, abi.encode(beneficiary, tgeBps, weeklyBps, startTimestamp));
+}
 
     function getVestingInfo(address user) external view returns (
         uint256 totalPurchased,
