@@ -8,4 +8,5 @@ out/
 .env.*
 
 # private keys
-private_key.txtslither-report.txt
+private_key.txt
+slither-report.txt
