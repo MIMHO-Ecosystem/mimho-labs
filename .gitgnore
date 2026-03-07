@@ -1,1 +1,11 @@
-slither-report.txt
+# Foundry
+broadcast/
+cache/
+out/
+
+# Environment
+.env
+.env.*
+
+# private keys
+private_key.txtslither-report.txt

@@ -77,7 +77,7 @@ interface IMIMHOLiquidityBootstrapper {
     function receivePresaleBNB() external payable;
 }
 
-contract MIMHOPresale is Ownable2Step, Pausable, ReentrancyGuard {
+contract MIMHOPresaleTest is Ownable2Step, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     /* =========================
@@ -131,8 +131,8 @@ contract MIMHOPresale is Ownable2Step, Pausable, ReentrancyGuard {
     uint256 public constant MAX_BUY_PER_WALLET_WEI = 5 ether;
 
     // Window (ET 16:20 => UTC 20:20)
-    uint64 public constant SALE_START = 1775480400; // 2026-04-06 13:00:00 UTC = 06/04/2026 10:00 Brasil
-    uint64 public constant SALE_END   = 1776690000; // 2026-04-20 13:00:00 UTC = 20/04/2026 10:00 Brasil
+    uint64 public constant SALE_START = 1700000000; // test start (past)
+    uint64 public constant SALE_END   = 2000000000; // test end (future)
 
     // Vesting parameters
     uint16 public constant TGE_BPS = 2000;   // 20%
