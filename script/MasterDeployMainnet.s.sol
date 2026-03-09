@@ -90,7 +90,7 @@ contract MasterDeployMainnet is Script {
     //////////////////////////////////////////////////////////////*/
 
     uint256 constant INJECT_COOLDOWN   = 7 days;
-    uint256 constant INJECT_FAILSAFE   = 180 days;
+    uint256 constant INJECT_FAILSAFE   = 7 days;
     bool    constant INJECT_AUTO_START = false;
 
     /*//////////////////////////////////////////////////////////////

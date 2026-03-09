@@ -157,7 +157,7 @@ contract MIMHOInjectLiquidity is Ownable2StepLite, ReentrancyGuardLite, Pausable
     uint256 public constant MIN_INJECTION_COOLDOWN = 1 days;
     uint256 public constant MAX_INJECTION_COOLDOWN = 45 days;
 
-    uint256 public constant MIN_FAILSAFE_DELAY = 30 days;
+    uint256 public constant MIN_FAILSAFE_DELAY = 7 days;
     uint256 public constant MAX_FAILSAFE_DELAY = 365 days;
 
     /* -------------------------
