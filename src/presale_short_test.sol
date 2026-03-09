@@ -131,8 +131,8 @@ contract MIMHOPresaleShortTest is Ownable2Step, Pausable, ReentrancyGuard {
     uint256 public constant MAX_BUY_PER_WALLET_WEI = 5 ether;
 
     // Window (ET 16:20 => UTC 20:20)
-    uint64 public constant SALE_START = 1772901934; // short test start
-    uint64 public constant SALE_END   = 1772903734; // short test end
+    uint64 public constant SALE_START = 1773031360; // short test start
+    uint64 public constant SALE_END   = 1773033160; // short test end
 
     // Vesting parameters
     uint16 public constant TGE_BPS = 2000;   // 20%
