@@ -1,3 +1,42 @@
+# MIMHO Labs
+
+MIMHO Labs contains smart contracts, internal security reviews, automated analysis artifacts, testing reports and tooling for the MIMHO ecosystem.
+
+## Current Contract Status
+
+| Version | Status | Notes |
+|---|---|---|
+| V1 | Deprecated | Presale V1 suffered a critical fund-lock incident and is preserved for transparency. |
+| V2 | Active Security Hardening | Current version under Foundry, Slither, Aderyn, Mythril and Echidna testing. |
+
+## Important Notice
+
+MIMHO V1 contracts are not recommended for production use.
+
+The V1 presale contract suffered a critical fund-lock incident during the 2026-04-20 presale flow. The incident is documented under:
+
+```text
+audits/v1-deprecated/INCIDENT-2026-04-20-PRESALE.md
+```
+
+MIMHO V2 is the current active development version and is being rebuilt with stronger security requirements, explicit transfer failure simulation, invariant testing and anti-fund-lock checks.
+
+## Security Review Language
+
+The materials in this repository are internal security review artifacts and automated analysis outputs.
+
+Unless explicitly stated otherwise, they should not be described as third-party audits or certifications.
+
+Recommended language:
+
+- internal security review
+- automated analysis
+- security hardening
+- test report
+- audit artifacts
+
+---
+
 # 🧪 MIMHO Labs — Core Tests & Tooling
 
 This repository contains the **technical testing, auditing, and tooling environment**
