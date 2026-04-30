@@ -45,6 +45,7 @@ import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 /* ============================================================
                         REGISTRY INTERFACE
@@ -159,7 +160,6 @@ contract MIMHOStaking is Ownable2Step, ReentrancyGuard, Pausable, IContratoMIMHO
     bytes32 private constant ACT_SYNC_RESERVE      = keccak256("SYNC_REWARD_RESERVE");
     bytes32 private constant ACT_STAKE             = keccak256("STAKE");
     bytes32 private constant ACT_UNSTAKE           = keccak256("UNSTAKE");
-    bytes32 private constant ACT_ACCRUE            = keccak256("ACCRUE");
     bytes32 private constant ACT_REINVEST_TOGGLE   = keccak256("REINVEST_TOGGLE");
     bytes32 private constant ACT_CLAIM             = keccak256("CLAIM");
     bytes32 private constant ACT_SET_PARAMS        = keccak256("SET_PARAMS");
@@ -502,7 +502,7 @@ contract MIMHOStaking is Ownable2Step, ReentrancyGuard, Pausable, IContratoMIMHO
     _emitHubEvent(ACT_CLAIM, reward, abi.encode(msg.sender, reward, reinvested, p.amount, totalStaked, rewardReserve));
 }
 
-    function setReinvest(bool enabled) external whenNotPaused {
+    function setReinvest(bool enabled) external nonReentrant whenNotPaused {
     require(stakes[msg.sender].amount > 0, "MIMHO: no stake");
 
     stakes[msg.sender].reinvest = enabled;
@@ -662,31 +662,41 @@ contract MIMHOStaking is Ownable2Step, ReentrancyGuard, Pausable, IContratoMIMHO
                         INTERNAL: ACCRUAL
     ======================================================= */
     function _accrue(address user) internal {
-        StakePos storage p = stakes[user];
-        if (p.amount == 0) {
-            p.lastAccrueAt = block.timestamp;
-            return;
-        }
-        if (p.lastAccrueAt == 0) p.lastAccrueAt = block.timestamp;
-        if (block.timestamp <= p.lastAccrueAt) return;
+    StakePos storage p = stakes[user];
 
-        uint256 earned = _earned(user, p);
-p.lastAccrueAt = block.timestamp;
+    if (p.amount == 0) {
+        p.lastAccrueAt = block.timestamp;
+        return;
+    }
 
-if (earned > 0) {
-    // Hard cap accrual by available reserve (anti-oversubscription)
+    if (p.lastAccrueAt == 0) {
+        p.lastAccrueAt = block.timestamp;
+        return;
+    }
+
+    if (block.timestamp <= p.lastAccrueAt) {
+        return;
+    }
+
+    uint256 earned = _earned(user, p);
+
+    p.lastAccrueAt = block.timestamp;
+
+    if (earned == 0) {
+        return;
+    }
+
     if (earned > rewardReserve) {
         earned = rewardReserve;
     }
 
-    if (earned > 0) {
-        p.accrued += earned;
-
-        emit Accrued(user, earned, p.accrued);
-        _emitHubEvent(ACT_ACCRUE, earned, abi.encode(user, earned, p.accrued));
-       }
-       
+    if (earned == 0) {
+        return;
     }
+
+    p.accrued += earned;
+
+    emit Accrued(user, earned, p.accrued);
 }
 
     function _earned(address user, StakePos memory p) internal view returns (uint256) {
@@ -697,13 +707,16 @@ if (earned > 0) {
 
     uint256 boostBps = _computeBoostBps(user);
     uint256 apyBps = baseApyBpsTop + boostBps;
-    if (apyBps > maxTotalApyBps) apyBps = maxTotalApyBps;
 
-    // Safe order to avoid uint256 overflow:
-    // yearly = amount * apy / BPS
-    // earned = yearly * dt / ONE_YEAR
-    uint256 yearly = (p.amount * apyBps) / BPS;
-    return (yearly * dt) / ONE_YEAR;
+    if (apyBps > maxTotalApyBps) {
+        apyBps = maxTotalApyBps;
+    }
+
+    return Math.mulDiv(
+        p.amount,
+        apyBps * dt,
+        BPS * ONE_YEAR
+    );
 }
 
     function _earnedView(address user, StakePos memory p) internal view returns (uint256) {

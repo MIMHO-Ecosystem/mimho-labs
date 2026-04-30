@@ -6,6 +6,7 @@ import "../../src/v2/staking.sol";
 import "./mocks/MockERC20.sol";
 import "./mocks/MockRegistry.sol";
 import "./mocks/MockBrokenERC20.sol";
+import "./mocks/MockReentrantERC20.sol";
 
 contract StakingFlowTest is Test {
     MockERC20 token;
