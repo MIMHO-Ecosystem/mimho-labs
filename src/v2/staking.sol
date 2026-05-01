@@ -45,6 +45,7 @@ import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
 /* ============================================================
@@ -140,6 +141,7 @@ interface IMIMHOProtocol {
                             STAKING
    ============================================================ */
 contract MIMHOStaking is Ownable2Step, ReentrancyGuard, Pausable, IContratoMIMHO, IMIMHOProtocol {
+    using SafeERC20 for IERC20;
     /* =======================================================
                             CONSTANTS
     ======================================================= */
@@ -355,10 +357,7 @@ contract MIMHOStaking is Ownable2Step, ReentrancyGuard, Pausable, IContratoMIMHO
     function fundRewards(uint256 amount) external nonReentrant whenNotPaused {
     require(amount > 0, "MIMHO: amount=0");
 
-    require(
-        mimhoToken.transferFrom(msg.sender, address(this), amount),
-        "MIMHO: transferFrom fail"
-    );
+    mimhoToken.safeTransferFrom(msg.sender, address(this), amount);
 
     rewardReserve += amount;
 
@@ -390,7 +389,7 @@ contract MIMHOStaking is Ownable2Step, ReentrancyGuard, Pausable, IContratoMIMHO
 
         _accrue(msg.sender);
 
-        require(mimhoToken.transferFrom(msg.sender, address(this), amount), "MIMHO: transferFrom fail");
+        mimhoToken.safeTransferFrom(msg.sender, address(this), amount);
 
         StakePos storage p = stakes[msg.sender];
         if (p.amount == 0) {
@@ -417,7 +416,7 @@ contract MIMHOStaking is Ownable2Step, ReentrancyGuard, Pausable, IContratoMIMHO
         p.amount -= amount;
         totalStaked -= amount;
 
-        require(mimhoToken.transfer(msg.sender, amount), "MIMHO: transfer fail");
+        mimhoToken.safeTransfer(msg.sender, amount);
 
         emit Unstaked(msg.sender, amount, p.amount, totalStaked);
         _emitHubEvent(ACT_UNSTAKE, amount, abi.encode(msg.sender, amount, p.amount, totalStaked));
@@ -496,7 +495,7 @@ contract MIMHOStaking is Ownable2Step, ReentrancyGuard, Pausable, IContratoMIMHO
     // INTERACTIONS (ABSOLUTE END)
     // --------------------
     if (!reinvested) {
-        require(mimhoToken.transfer(msg.sender, reward), "MIMHO: transfer fail");
+        mimhoToken.safeTransfer(msg.sender, reward);
     }
 
     _emitHubEvent(ACT_CLAIM, reward, abi.encode(msg.sender, reward, reinvested, p.amount, totalStaked, rewardReserve));
