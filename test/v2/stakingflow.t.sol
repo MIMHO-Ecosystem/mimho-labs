@@ -558,6 +558,115 @@ contract StakingFlowTest is Test {
         (amount,,,,,,) = staking.getUser(user);
     }
 
+
+    // =====================================================
+    // REENTRANCY / MALICIOUS TOKEN TESTS
+    // =====================================================
+
+    function test_Reentrancy_AttemptDuringStakeIsBlocked() public {
+        MockReentrantERC20 evil = new MockReentrantERC20();
+        MockRegistry evilRegistry = new MockRegistry(address(evil));
+        MIMHOStaking evilStaking = new MIMHOStaking(address(evilRegistry));
+
+        evil.setTarget(address(evilStaking));
+
+        evil.mint(alice, USER_INITIAL_BALANCE);
+
+        vm.prank(alice);
+        evil.approve(address(evilStaking), type(uint256).max);
+
+        evil.setAttackMode(1); // Stake
+        evil.setAttackEnabled(true);
+
+        vm.prank(alice);
+        evilStaking.stake(MIN_STAKE);
+
+        (uint256 amount,,,,,,) = evilStaking.getUser(alice);
+
+        assertEq(amount, MIN_STAKE);
+        assertEq(evilStaking.totalStaked(), MIN_STAKE);
+        assertEq(evil.balanceOf(address(evilStaking)), MIN_STAKE);
+    }
+
+    function test_Reentrancy_AttemptDuringFundRewardsIsBlocked() public {
+        MockReentrantERC20 evil = new MockReentrantERC20();
+        MockRegistry evilRegistry = new MockRegistry(address(evil));
+        MIMHOStaking evilStaking = new MIMHOStaking(address(evilRegistry));
+
+        evil.setTarget(address(evilStaking));
+
+        evil.mint(address(this), REWARD_FUND);
+        evil.approve(address(evilStaking), type(uint256).max);
+
+        evil.setAttackMode(4); // FundRewards
+        evil.setAttackEnabled(true);
+
+        evilStaking.fundRewards(REWARD_FUND);
+
+        assertEq(evilStaking.rewardReserve(), REWARD_FUND);
+        assertEq(evil.balanceOf(address(evilStaking)), REWARD_FUND);
+    }
+
+    function test_Reentrancy_AttemptDuringUnstakeIsBlocked() public {
+        MockReentrantERC20 evil = new MockReentrantERC20();
+        MockRegistry evilRegistry = new MockRegistry(address(evil));
+        MIMHOStaking evilStaking = new MIMHOStaking(address(evilRegistry));
+
+        evil.setTarget(address(evilStaking));
+
+        evil.mint(alice, USER_INITIAL_BALANCE);
+
+        vm.startPrank(alice);
+        evil.approve(address(evilStaking), type(uint256).max);
+        evilStaking.stake(MIN_STAKE);
+        vm.stopPrank();
+
+        evil.setAttackMode(2); // Unstake
+        evil.setAttackEnabled(true);
+
+        vm.prank(alice);
+        evilStaking.unstake(10_000 ether);
+
+        (uint256 amount,,,,,,) = evilStaking.getUser(alice);
+
+        assertEq(amount, 90_000 ether);
+        assertEq(evilStaking.totalStaked(), 90_000 ether);
+        assertEq(evil.balanceOf(address(evilStaking)), 90_000 ether);
+    }
+
+    function test_Reentrancy_AttemptDuringClaimIsBlocked() public {
+        MockReentrantERC20 evil = new MockReentrantERC20();
+        MockRegistry evilRegistry = new MockRegistry(address(evil));
+        MIMHOStaking evilStaking = new MIMHOStaking(address(evilRegistry));
+
+        evil.setTarget(address(evilStaking));
+
+        evil.mint(address(this), REWARD_FUND);
+        evil.approve(address(evilStaking), type(uint256).max);
+        evilStaking.fundRewards(REWARD_FUND);
+
+        evil.mint(alice, USER_INITIAL_BALANCE);
+
+        vm.startPrank(alice);
+        evil.approve(address(evilStaking), type(uint256).max);
+        evilStaking.stake(MIN_STAKE);
+        vm.stopPrank();
+
+        vm.warp(block.timestamp + 10 days);
+
+        evil.setAttackMode(3); // Claim
+        evil.setAttackEnabled(true);
+
+        vm.prank(alice);
+        evilStaking.claim();
+
+        (uint256 amount,,, uint256 lastClaimAt, uint256 accrued,,) = evilStaking.getUser(alice);
+
+        assertEq(amount, MIN_STAKE);
+        assertGt(lastClaimAt, 0);
+        assertEq(accrued, 0);
+    }
+
 }
 
 contract StakingHandler is Test {
