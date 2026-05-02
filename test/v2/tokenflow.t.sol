@@ -537,3 +537,204 @@ contract TokenFlowTest is Test {
     }
 
 }
+
+contract TokenHandler is Test {
+    MIMHO public token;
+
+    address public alice;
+    address public bob;
+    address public carol;
+    address public pair;
+
+    uint256 public constant MAX_ACTION_AMOUNT = 2_000_000 ether;
+
+    constructor(
+        MIMHO token_,
+        address alice_,
+        address bob_,
+        address carol_,
+        address pair_
+    ) {
+        token = token_;
+        alice = alice_;
+        bob = bob_;
+        carol = carol_;
+        pair = pair_;
+    }
+
+    function actionWalletTransfer(uint8 fromSeed, uint8 toSeed, uint256 amount) external {
+        address from = _actor(fromSeed);
+        address to = _actor(toSeed);
+
+        if (from == to) return;
+
+        uint256 bal = token.balanceOf(from);
+        if (bal == 0) return;
+
+        uint256 maxAmount = bal;
+        if (maxAmount > MAX_ACTION_AMOUNT) {
+            maxAmount = MAX_ACTION_AMOUNT;
+        }
+
+        amount = bound(amount, 1, maxAmount);
+
+        vm.prank(from);
+        try token.transfer(to, amount) {} catch {}
+    }
+
+    function actionSell(uint8 actorSeed, uint256 amount) external {
+        address seller = _actor(actorSeed);
+
+        uint256 bal = token.balanceOf(seller);
+        if (bal == 0) return;
+
+        uint256 maxAmount = bal;
+        if (maxAmount > MAX_ACTION_AMOUNT) {
+            maxAmount = MAX_ACTION_AMOUNT;
+        }
+
+        amount = bound(amount, 1, maxAmount);
+
+        vm.prank(seller);
+        try token.transfer(pair, amount) {} catch {}
+    }
+
+    function actionBuy(uint8 actorSeed, uint256 amount) external {
+        address buyer = _actor(actorSeed);
+
+        uint256 pairBal = token.balanceOf(pair);
+        if (pairBal == 0) return;
+
+        uint256 maxAmount = pairBal;
+        if (maxAmount > MAX_ACTION_AMOUNT) {
+            maxAmount = MAX_ACTION_AMOUNT;
+        }
+
+        amount = bound(amount, 1, maxAmount);
+
+        vm.prank(pair);
+        try token.transfer(buyer, amount) {} catch {}
+    }
+
+    function actionApproveAndTransferFrom(
+        uint8 ownerSeed,
+        uint8 spenderSeed,
+        uint8 toSeed,
+        uint256 amount
+    ) external {
+        address tokenOwner = _actor(ownerSeed);
+        address spender = _actor(spenderSeed);
+        address to = _actor(toSeed);
+
+        if (tokenOwner == spender) return;
+
+        uint256 bal = token.balanceOf(tokenOwner);
+        if (bal == 0) return;
+
+        uint256 maxAmount = bal;
+        if (maxAmount > MAX_ACTION_AMOUNT) {
+            maxAmount = MAX_ACTION_AMOUNT;
+        }
+
+        amount = bound(amount, 1, maxAmount);
+
+        vm.prank(tokenOwner);
+        try token.approve(spender, amount) {} catch {
+            return;
+        }
+
+        vm.prank(spender);
+        try token.transferFrom(tokenOwner, to, amount) {} catch {}
+    }
+
+    function _actor(uint8 seed) internal view returns (address) {
+        uint8 index = seed % 3;
+
+        if (index == 0) return alice;
+        if (index == 1) return bob;
+        return carol;
+    }
+}
+
+contract TokenInvariantTest is Test {
+    MIMHO token;
+    MockTokenRegistry registry;
+    TokenHandler handler;
+
+    address alice = address(0xA11CE);
+    address bob = address(0xB0B);
+    address carol = address(0xCA20);
+    address pair = address(0xFA1);
+    address stakingTarget = address(0x5700);
+    address marketingWallet = address(0xBEEF);
+
+    address constant FOUNDER = 0x3b50433D64193923199aAf209eE8222B9c728Fbd;
+    address constant LP_RESERVE = 0xb891C4e94a1F4B7Aa35d21BbA37D245909B6ad95;
+    address constant DEAD = 0x000000000000000000000000000000000000dEaD;
+
+    uint256 constant TOTAL_SUPPLY = 1_000_000_000_000 ether;
+    uint256 constant MIN_SUPPLY = 500_000_000_000 ether;
+
+    bytes32 constant KEY_STAKING = keccak256("STAKING_CONTRACT");
+    bytes32 constant KEY_MARKETING_WALLET = keccak256("MARKETING_WALLET");
+
+    function setUp() public {
+        token = new MIMHO();
+        registry = new MockTokenRegistry();
+
+        registry.set(KEY_STAKING, stakingTarget);
+        registry.set(KEY_MARKETING_WALLET, marketingWallet);
+
+        token.setRegistry(address(registry));
+
+        token.transfer(alice, 10_000_000 ether);
+        token.transfer(bob, 10_000_000 ether);
+        token.transfer(carol, 10_000_000 ether);
+
+        // Seed liquidity before setting AMM pair to avoid launch setup tax.
+        token.transfer(pair, 100_000_000 ether);
+
+        token.setAMMPair(pair, true);
+        token.enableTrading();
+
+        // Disable max-buy launch window for invariant random buys.
+        vm.warp(block.timestamp + 21 minutes);
+
+        handler = new TokenHandler(token, alice, bob, carol, pair);
+
+        targetContract(address(handler));
+    }
+
+    function invariant_KnownBalancesEqualTotalSupply() public view {
+        uint256 tracked =
+            token.balanceOf(address(this)) +
+            token.balanceOf(alice) +
+            token.balanceOf(bob) +
+            token.balanceOf(carol) +
+            token.balanceOf(pair) +
+            token.balanceOf(FOUNDER) +
+            token.balanceOf(LP_RESERVE) +
+            token.balanceOf(DEAD) +
+            token.balanceOf(stakingTarget) +
+            token.balanceOf(marketingWallet);
+
+        assertEq(tracked, TOTAL_SUPPLY);
+    }
+
+    function invariant_CirculatingSupplyMatchesDeadBalance() public view {
+        assertEq(token.circulatingSupply(), TOTAL_SUPPLY - token.balanceOf(DEAD));
+    }
+
+    function invariant_BurnFloorFlagMatchesSupplyMath() public view {
+        bool expected = (TOTAL_SUPPLY - token.balanceOf(DEAD)) <= MIN_SUPPLY;
+        assertEq(token.burnFloorReached(), expected);
+    }
+
+    function invariant_TotalSupplyConstant() public view {
+        assertEq(token.totalSupply(), TOTAL_SUPPLY);
+    }
+
+    function invariant_TradingRemainsEnabled() public view {
+        assertTrue(token.isTradingEnabled());
+    }
+}
