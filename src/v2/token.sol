@@ -205,6 +205,7 @@ contract MIMHO is IERC20 {
     event DAOActivated(address indexed  daoContract);
     event RegistrySet(address indexed  registry);
     event AMMPairSet(address indexed  pair, bool status);
+    event NativeRecovered(address indexed to, uint256 amount);
 
     /*//////////////////////////////////////////////////////////////
                             HUD CONSTANTS
@@ -586,11 +587,14 @@ if (registryReady) {
 
     function enableTrading() external onlyOwner {
         require(!tradingEnabled, "MIMHO: Trading already enabled");
+
         tradingEnabled = true;
         tradingEnabledAt = block.timestamp; // Start anti-whale window now
 
-        _emitHubEvent(ACT_TRADING, msg.sender, 0, abi.encode(true, tradingEnabledAt, MAX_BUY_AMOUNT, MAX_BUY_DURATION));
         emit AMMPairSet(address(0), false); // no-op marker (optional)
+
+        // Hub emit last: best-effort external observability after effects/events
+        _emitHubEvent(ACT_TRADING, msg.sender, 0, abi.encode(true, tradingEnabledAt, MAX_BUY_AMOUNT, MAX_BUY_DURATION));
     }
 
     function pauseEmergency() external onlyDAOorOwner {
@@ -603,12 +607,14 @@ if (registryReady) {
         _emitHubEvent(ACT_UNPAUSE, msg.sender, 0, abi.encode(false));
     }
 
-    function setDAO(address _dao) external onlyOwner {
-        require(_dao != address(0), "MIMHO: DAO zero");
+    function setDAO(address daoAddr) external onlyOwner {
+        require(daoAddr != address(0), "MIMHO: DAO zero");
         require(daoContract == address(0), "MIMHO: DAO already set");
-        daoContract = _dao;
-        emit DAOSet(_dao);
-        _emitHubEvent(ACT_DAO_SET, msg.sender, 0, abi.encode(_dao));
+
+        daoContract = daoAddr;
+
+        emit DAOSet(daoAddr);
+        _emitHubEvent(ACT_DAO_SET, msg.sender, 0, abi.encode(daoAddr));
     }
 
     function activateDAO() external onlyOwner {
@@ -619,11 +625,13 @@ if (registryReady) {
         _emitHubEvent(ACT_DAO_ACT, msg.sender, 0, abi.encode(daoContract));
     }
 
-    function setRegistry(address _registry) external onlyDAOorOwner {
-        require(_registry != address(0), "MIMHO: Registry zero");
-        registry = IMIMHORegistry(_registry);
-        emit RegistrySet(_registry);
-        _emitHubEvent(ACT_REGISTRY, msg.sender, 0, abi.encode(_registry));
+    function setRegistry(address registryAddr) external onlyDAOorOwner {
+        require(registryAddr != address(0), "MIMHO: Registry zero");
+
+        registry = IMIMHORegistry(registryAddr);
+
+        emit RegistrySet(registryAddr);
+        _emitHubEvent(ACT_REGISTRY, msg.sender, 0, abi.encode(registryAddr));
     }
 
     function setAMMPair(address pair, bool status) external onlyDAOorOwner {
@@ -642,9 +650,17 @@ if (registryReady) {
 
     function transferOwnership(address newOwner) external onlyOwner {
         require(newOwner != address(0), "MIMHO: Owner zero");
-        emit OwnershipTransferred(owner, newOwner);
-        _emitHubEvent(ACT_TRADING, msg.sender, 0, abi.encode(bytes32("OWNER_TRANSFER"), owner, newOwner));
+
+        address oldOwner = owner;
+
+        // Effects first
         owner = newOwner;
+
+        // Local event after state update
+        emit OwnershipTransferred(oldOwner, newOwner);
+
+        // Hub emit last: best-effort external observability after effects/events
+        _emitHubEvent(ACT_TRADING, msg.sender, 0, abi.encode(bytes32("OWNER_TRANSFER"), oldOwner, newOwner));
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -684,9 +700,17 @@ if (registryReady) {
 
     function recoverNative(address payable to, uint256 amount) external onlyDAOorOwner {
         require(to != address(0), "MIMHO: To zero");
+        require(amount > 0, "MIMHO: Amount zero");
+        require(amount <= address(this).balance, "MIMHO: Native balance low");
+
+        // Local event before native interaction.
+        // If the call fails, the whole transaction reverts and the event is reverted too.
+        emit NativeRecovered(to, amount);
+
         (bool ok, ) = to.call{value: amount}("");
         require(ok, "MIMHO: Native recover failed");
 
+        // Hub emit last: best-effort external observability after the recovery path.
         _emitHubEvent(ACT_RECOVER, msg.sender, amount, abi.encode(address(0), to, amount));
     }
 }

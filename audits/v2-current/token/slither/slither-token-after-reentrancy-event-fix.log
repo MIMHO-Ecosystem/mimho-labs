@@ -1,0 +1,24 @@
+'forge clean' running (wd: /mnt/c/Users/Tatiana/Documents/MIMHO_LABS)
+'forge config --json' running
+Warning: Found unknown `ignored_paths` config for profile `default` defined in foundry.toml.
+'forge build --build-info src/v2/token.sol' running (wd: /mnt/c/Users/Tatiana/Documents/MIMHO_LABS)
+INFO:Detectors:
+Detector: timestamp
+MIMHO.maxBuyActive() (src/v2/token.sol#342-346) uses timestamp for comparisons
+	Dangerous comparisons:
+	- tradingEnabledAt == 0 (src/v2/token.sol#344)
+	- block.timestamp < (tradingEnabledAt + MAX_BUY_DURATION) (src/v2/token.sol#345)
+MIMHO._transfer(address,address,uint256) (src/v2/token.sol#463-582) uses timestamp for comparisons
+	Dangerous comparisons:
+	- isBuy && maxBuyActive() (src/v2/token.sol#475)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+INFO:Detectors:
+Detector: cyclomatic-complexity
+MIMHO._transfer(address,address,uint256) (src/v2/token.sol#463-582) has a high cyclomatic complexity (19).
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#cyclomatic-complexity
+INFO:Detectors:
+Detector: low-level-calls
+Low level call in MIMHO.recoverNative(address,uint256) (src/v2/token.sol#701-715):
+	- (ok,None) = to.call{value: amount}() (src/v2/token.sol#710)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+INFO:Slither:src/v2/token.sol analyzed (4 contracts with 101 detectors), 4 result(s) found

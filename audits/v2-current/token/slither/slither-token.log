@@ -1,0 +1,55 @@
+'forge clean' running (wd: /mnt/c/Users/Tatiana/Documents/MIMHO_LABS)
+'forge config --json' running
+Warning: Found unknown `ignored_paths` config for profile `default` defined in foundry.toml.
+'forge build --build-info src/v2/token.sol' running (wd: /mnt/c/Users/Tatiana/Documents/MIMHO_LABS)
+INFO:Detectors:
+Detector: reentrancy-no-eth
+Reentrancy in MIMHO.transferOwnership(address) (src/v2/token.sol#643-648):
+	External calls:
+	- _emitHubEvent(ACT_TRADING,msg.sender,0,abi.encode(bytes32(OWNER_TRANSFER),owner,newOwner)) (src/v2/token.sol#646)
+		- hub.emitEvent(contractType(),action,caller,value,data) (src/v2/token.sol#307-310)
+	State variables written after the call(s):
+	- owner = newOwner (src/v2/token.sol#647)
+	MIMHO.owner (src/v2/token.sol#123) can be used in cross function reentrancies:
+	- MIMHO._transfer(address,address,uint256) (src/v2/token.sol#462-581)
+	- MIMHO.constructor() (src/v2/token.sol#257-268)
+	- MIMHO.onlyDAOorOwner() (src/v2/token.sol#239-246)
+	- MIMHO.onlyOwner() (src/v2/token.sol#234-237)
+	- MIMHO.owner (src/v2/token.sol#123)
+	- MIMHO.renounceIfReady() (src/v2/token.sol#656-666)
+	- MIMHO.transferOwnership(address) (src/v2/token.sol#643-648)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-2
+INFO:Detectors:
+Detector: reentrancy-events
+Reentrancy in MIMHO.enableTrading() (src/v2/token.sol#587-594):
+	External calls:
+	- _emitHubEvent(ACT_TRADING,msg.sender,0,abi.encode(true,tradingEnabledAt,MAX_BUY_AMOUNT,MAX_BUY_DURATION)) (src/v2/token.sol#592)
+		- hub.emitEvent(contractType(),action,caller,value,data) (src/v2/token.sol#307-310)
+	Event emitted after the call(s):
+	- AMMPairSet(address(0),false) (src/v2/token.sol#593)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-4
+INFO:Detectors:
+Detector: timestamp
+MIMHO.maxBuyActive() (src/v2/token.sol#341-345) uses timestamp for comparisons
+	Dangerous comparisons:
+	- tradingEnabledAt == 0 (src/v2/token.sol#343)
+	- block.timestamp < (tradingEnabledAt + MAX_BUY_DURATION) (src/v2/token.sol#344)
+MIMHO._transfer(address,address,uint256) (src/v2/token.sol#462-581) uses timestamp for comparisons
+	Dangerous comparisons:
+	- isBuy && maxBuyActive() (src/v2/token.sol#474)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+INFO:Detectors:
+Detector: cyclomatic-complexity
+MIMHO._transfer(address,address,uint256) (src/v2/token.sol#462-581) has a high cyclomatic complexity (19).
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#cyclomatic-complexity
+INFO:Detectors:
+Detector: low-level-calls
+Low level call in MIMHO.recoverNative(address,uint256) (src/v2/token.sol#685-691):
+	- (ok,None) = to.call{value: amount}() (src/v2/token.sol#687)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+INFO:Detectors:
+Detector: naming-convention
+Parameter MIMHO.setDAO(address)._dao (src/v2/token.sol#606) is not in mixedCase
+Parameter MIMHO.setRegistry(address)._registry (src/v2/token.sol#622) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+INFO:Slither:src/v2/token.sol analyzed (4 contracts with 101 detectors), 8 result(s) found
