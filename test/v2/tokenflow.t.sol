@@ -354,4 +354,186 @@ contract TokenFlowTest is Test {
         vm.expectRevert(bytes("MIMHO: Cannot recover MIMHO"));
         token.recoverTokens(address(token), alice, 1 ether);
     }
+// =====================================================
+    // FUZZ TESTS — ERC20 CORE
+    // =====================================================
+
+    function testFuzz_WalletToWalletNoFee(uint256 amount) public {
+        amount = bound(amount, 1, 10_000_000 ether);
+
+        token.transfer(alice, amount);
+        token.enableTrading();
+
+        vm.prank(alice);
+        token.transfer(bob, amount);
+
+        assertEq(token.balanceOf(bob), amount);
+        assertEq(token.balanceOf(alice), 0);
+        assertEq(token.balanceOf(FOUNDER), 0);
+        assertEq(token.balanceOf(LP_RESERVE), 0);
+        assertEq(token.balanceOf(DEAD), 0);
+    }
+
+    function testFuzz_ApproveTransferFrom(uint256 amount, uint256 spendAmount) public {
+        amount = bound(amount, 1, 10_000_000 ether);
+        spendAmount = bound(spendAmount, 1, amount);
+
+        token.transfer(alice, amount);
+        token.enableTrading();
+
+        vm.prank(alice);
+        token.approve(bob, amount);
+
+        vm.prank(bob);
+        token.transferFrom(alice, bob, spendAmount);
+
+        assertEq(token.balanceOf(bob), spendAmount);
+        assertEq(token.balanceOf(alice), amount - spendAmount);
+        assertEq(token.allowance(alice, bob), amount - spendAmount);
+    }
+
+    function testFuzz_BuyFounderFee(uint256 buyAmount) public {
+        buyAmount = bound(buyAmount, 1 ether, MAX_BUY_AMOUNT);
+
+        uint256 seed = MAX_BUY_AMOUNT * 2;
+
+        token.transfer(pair, seed);
+        token.setAMMPair(pair, true);
+        token.enableTrading();
+
+        uint256 founderBefore = token.balanceOf(FOUNDER);
+
+        vm.prank(pair);
+        token.transfer(alice, buyAmount);
+
+        uint256 founderFee = (buyAmount * 100) / 10_000;
+        uint256 userAmount = buyAmount - founderFee;
+
+        assertEq(token.balanceOf(alice), userAmount);
+        assertEq(token.balanceOf(FOUNDER), founderBefore + founderFee);
+        assertEq(token.balanceOf(pair), seed - buyAmount);
+    }
+
+    function testFuzz_SellFeesWithRegistry(uint256 sellAmount) public {
+        sellAmount = bound(sellAmount, 1 ether, 10_000_000 ether);
+
+        token.setRegistry(address(registry));
+        token.setAMMPair(pair, true);
+        token.enableTrading();
+
+        token.transfer(alice, sellAmount);
+
+        uint256 founderFee = (sellAmount * 100) / 10_000;
+        uint256 lpFee = (sellAmount * 18) / 10_000;
+        uint256 burnFee = (sellAmount * 16) / 10_000;
+        uint256 stakeFee = (sellAmount * 16) / 10_000;
+        uint256 totalFee = founderFee + lpFee + burnFee + stakeFee;
+        uint256 pairReceives = sellAmount - totalFee;
+
+        vm.prank(alice);
+        token.transfer(pair, sellAmount);
+
+        assertEq(token.balanceOf(pair), pairReceives);
+        assertEq(token.balanceOf(FOUNDER), founderFee);
+        assertEq(token.balanceOf(LP_RESERVE), lpFee);
+        assertEq(token.balanceOf(DEAD), burnFee);
+        assertEq(token.balanceOf(stakingTarget), stakeFee);
+        assertEq(token.balanceOf(alice), 0);
+    }
+
+    // =====================================================
+    // LAUNCH / LIQUIDITY EDGE CASES
+    // =====================================================
+
+    function test_LiquiditySeedBeforeAMMPairHasNoFee() public {
+        uint256 seed = 1_000_000_000 ether;
+
+        token.transfer(pair, seed);
+
+        assertEq(token.balanceOf(pair), seed);
+        assertEq(token.balanceOf(FOUNDER), 0);
+        assertEq(token.balanceOf(LP_RESERVE), 0);
+        assertEq(token.balanceOf(DEAD), 0);
+    }
+
+    function test_LiquiditySeedAfterAMMPairIsTaxedAsSell() public {
+        uint256 seed = 1_000_000 ether;
+
+        token.setAMMPair(pair, true);
+
+        token.transfer(pair, seed);
+
+        uint256 founderFee = (seed * 100) / 10_000;
+        uint256 lpFee = (seed * 18) / 10_000;
+        uint256 pairReceives = seed - founderFee - lpFee;
+
+        assertEq(token.balanceOf(pair), pairReceives);
+        assertEq(token.balanceOf(FOUNDER), founderFee);
+        assertEq(token.balanceOf(LP_RESERVE), lpFee);
+    }
+
+    function test_FeeExemptLiquiditySeedAfterAMMPairHasNoFee() public {
+        uint256 seed = 1_000_000 ether;
+
+        token.setAMMPair(pair, true);
+        token.setFeeExempt(owner, true);
+
+        token.transfer(pair, seed);
+
+        assertEq(token.balanceOf(pair), seed);
+        assertEq(token.balanceOf(FOUNDER), 0);
+        assertEq(token.balanceOf(LP_RESERVE), 0);
+        assertEq(token.balanceOf(DEAD), 0);
+    }
+
+    function test_MaxBuyInactiveAfter20Minutes() public {
+        uint256 seed = 2_000_000_000 ether;
+        uint256 buyAmount = MAX_BUY_AMOUNT + 100 ether;
+
+        token.transfer(pair, seed);
+        token.setAMMPair(pair, true);
+        token.enableTrading();
+
+        vm.warp(block.timestamp + 20 minutes);
+
+        assertFalse(token.maxBuyActive());
+
+        vm.prank(pair);
+        token.transfer(alice, buyAmount);
+
+        uint256 founderFee = (buyAmount * 100) / 10_000;
+
+        assertEq(token.balanceOf(alice), buyAmount - founderFee);
+    }
+
+    // =====================================================
+    // SUPPLY / BALANCE INVARIANT HELPERS
+    // =====================================================
+
+    function test_TotalTrackedBalancesAfterCommonFlows() public {
+        uint256 amount = 100_000 ether;
+
+        token.setRegistry(address(registry));
+        token.transfer(pair, 1_000_000 ether);
+        token.setAMMPair(pair, true);
+        token.enableTrading();
+
+        vm.prank(pair);
+        token.transfer(alice, amount);
+
+        vm.prank(alice);
+        token.transfer(pair, token.balanceOf(alice));
+
+        uint256 tracked =
+            token.balanceOf(owner) +
+            token.balanceOf(pair) +
+            token.balanceOf(alice) +
+            token.balanceOf(FOUNDER) +
+            token.balanceOf(LP_RESERVE) +
+            token.balanceOf(DEAD) +
+            token.balanceOf(stakingTarget);
+
+        assertEq(tracked, TOTAL_SUPPLY);
+    }
+
 }
