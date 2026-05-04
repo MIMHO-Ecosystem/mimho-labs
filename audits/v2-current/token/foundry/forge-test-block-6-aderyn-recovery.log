@@ -1,0 +1,120 @@
+Warning: Found unknown `ignored_paths` config for profile `default` defined in foundry.toml.
+No files changed, compilation skipped
+
+Ran 5 tests for test/v2/tokenflow.t.sol:TokenInvariantTest
+[PASS] invariant_BurnFloorFlagMatchesSupplyMath() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+------------------------------+-------+---------+----------╮
+| Contract     | Selector                     | Calls | Reverts | Discards |
++==========================================================================+
+| TokenHandler | actionApproveAndTransferFrom | 32007 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionBuy                    | 31778 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionSell                   | 32143 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionWalletTransfer         | 32072 | 0       | 0        |
+╰--------------+------------------------------+-------+---------+----------╯
+
+[PASS] invariant_CirculatingSupplyMatchesDeadBalance() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+------------------------------+-------+---------+----------╮
+| Contract     | Selector                     | Calls | Reverts | Discards |
++==========================================================================+
+| TokenHandler | actionApproveAndTransferFrom | 31814 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionBuy                    | 32346 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionSell                   | 31934 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionWalletTransfer         | 31906 | 0       | 0        |
+╰--------------+------------------------------+-------+---------+----------╯
+
+[PASS] invariant_KnownBalancesEqualTotalSupply() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+------------------------------+-------+---------+----------╮
+| Contract     | Selector                     | Calls | Reverts | Discards |
++==========================================================================+
+| TokenHandler | actionApproveAndTransferFrom | 31745 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionBuy                    | 32069 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionSell                   | 32054 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionWalletTransfer         | 32132 | 0       | 0        |
+╰--------------+------------------------------+-------+---------+----------╯
+
+[PASS] invariant_TotalSupplyConstant() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+------------------------------+-------+---------+----------╮
+| Contract     | Selector                     | Calls | Reverts | Discards |
++==========================================================================+
+| TokenHandler | actionApproveAndTransferFrom | 32028 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionBuy                    | 32262 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionSell                   | 31939 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionWalletTransfer         | 31771 | 0       | 0        |
+╰--------------+------------------------------+-------+---------+----------╯
+
+[PASS] invariant_TradingRemainsEnabled() (runs: 256, calls: 128000, reverts: 0)
+
+╭--------------+------------------------------+-------+---------+----------╮
+| Contract     | Selector                     | Calls | Reverts | Discards |
++==========================================================================+
+| TokenHandler | actionApproveAndTransferFrom | 32207 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionBuy                    | 31959 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionSell                   | 31927 | 0       | 0        |
+|--------------+------------------------------+-------+---------+----------|
+| TokenHandler | actionWalletTransfer         | 31907 | 0       | 0        |
+╰--------------+------------------------------+-------+---------+----------╯
+
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 126.87s (274.03s CPU time)
+
+Ran 40 tests for test/v2/tokenflow.t.sol:TokenFlowTest
+[PASS] testFuzz_ApproveTransferFrom(uint256,uint256) (runs: 256, μ: 163677, ~: 165302)
+[PASS] testFuzz_BuyFounderFee(uint256) (runs: 256, μ: 193318, ~: 193339)
+[PASS] testFuzz_SellFeesWithRegistry(uint256) (runs: 256, μ: 289470, ~: 289491)
+[PASS] testFuzz_WalletToWalletNoFee(uint256) (runs: 256, μ: 126554, ~: 126462)
+[PASS] test_ApproveAndTransferFrom() (gas: 164636)
+[PASS] test_BurnFloorInitiallyFalse() (gas: 9262)
+[PASS] test_BuyTakesFounderFeeOnly() (gas: 190545)
+[PASS] test_DAOCanOperateAfterActivation() (gas: 73423)
+[PASS] test_EnableTrading() (gas: 63576)
+[PASS] test_FeeExemptBypassesAMMFees() (gas: 216869)
+[PASS] test_FeeExemptLiquiditySeedAfterAMMPairHasNoFee() (gas: 115324)
+[PASS] test_LargeBuyAllowedAfterFirst20Minutes() (gas: 190230)
+[PASS] test_LiquiditySeedAfterAMMPairIsTaxedAsSell() (gas: 132542)
+[PASS] test_LiquiditySeedBeforeAMMPairHasNoFee() (gas: 63518)
+[PASS] test_MaxBuyInactiveAfter20Minutes() (gas: 189890)
+[PASS] test_Metadata() (gas: 16377)
+[PASS] test_OwnerCanTransferBeforeTradingEnabled() (gas: 56689)
+[PASS] test_PauseBlocksTransfer() (gas: 107322)
+[PASS] test_RecoverForeignERC20() (gas: 188253)
+[PASS] test_RecoverNative() (gas: 53895)
+[PASS] test_RenounceOnlyAfterDAOReady() (gas: 58128)
+[PASS] test_Revert_DAOCannotOperateBeforeActivation() (gas: 45307)
+[PASS] test_Revert_EnableTradingTwice() (gas: 62151)
+[PASS] test_Revert_MaxBuyDuringFirst20Minutes() (gas: 131747)
+[PASS] test_Revert_NonOwnerWalletTransferBeforeTradingEnabled() (gas: 60372)
+[PASS] test_Revert_RecoverForeignERC20ZeroAmount() (gas: 163079)
+[PASS] test_Revert_RecoverNativeAmountAboveBalance() (gas: 15901)
+[PASS] test_Revert_RecoverNativeZeroAddress() (gas: 12849)
+[PASS] test_Revert_RecoverNativeZeroAmount() (gas: 15660)
+[PASS] test_Revert_RecoverOwnToken() (gas: 16428)
+[PASS] test_Revert_SetAMMPairZero() (gas: 14008)
+[PASS] test_Revert_TransferFromWithoutAllowance() (gas: 106891)
+[PASS] test_SellTakesAllSellFeesWhenRegistryReady() (gas: 288199)
+[PASS] test_SellWithoutRegistryTakesFounderAndLPFeesOnly() (gas: 204218)
+[PASS] test_SetAMMPair() (gas: 40682)
+[PASS] test_SetDAOAndActivateDAO() (gas: 44539)
+[PASS] test_TotalSupplyAndInitialOwnerBalance() (gas: 18802)
+[PASS] test_TotalTrackedBalancesAfterCommonFlows() (gas: 329547)
+[PASS] test_UnpauseRestoresTransfer() (gas: 139243)
+[PASS] test_WalletToWalletAfterTradingHasNoFee() (gas: 139762)
+Suite result: ok. 40 passed; 0 failed; 0 skipped; finished in 127.52s (127.53s CPU time)
+
+Ran 2 test suites in 127.54s (254.39s CPU time): 45 tests passed, 0 failed, 0 skipped (45 total tests)

@@ -688,12 +688,21 @@ if (registryReady) {
     function recoverTokens(address token, address to, uint256 amount) external onlyDAOorOwner {
         require(token != address(0), "MIMHO: Token zero");
         require(to != address(0), "MIMHO: To zero");
+        require(amount > 0, "MIMHO: Amount zero");
         require(token != address(this), "MIMHO: Cannot recover MIMHO");
 
-        bool ok = IERC20(token).transfer(to, amount);
-        require(ok, "MIMHO: Recover failed");
+        _safeRecoverERC20Transfer(token, to, amount);
 
         _emitHubEvent(ACT_RECOVER, msg.sender, amount, abi.encode(token, to, amount));
+    }
+
+    function _safeRecoverERC20Transfer(address token, address to, uint256 amount) internal {
+        (bool success, bytes memory data) = token.call(
+            abi.encodeWithSelector(IERC20.transfer.selector, to, amount)
+        );
+
+        require(success, "MIMHO: Recover failed");
+        require(data.length == 0 || abi.decode(data, (bool)), "MIMHO: Recover failed");
     }
 
     receive() external payable {}

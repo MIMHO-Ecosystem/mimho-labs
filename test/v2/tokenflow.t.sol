@@ -16,6 +16,22 @@ contract MockTokenRegistry {
     }
 }
 
+
+contract RecoverMockERC20 {
+    mapping(address => uint256) public balanceOf;
+
+    function mint(address to, uint256 amount) external {
+        balanceOf[to] += amount;
+    }
+
+    function transfer(address to, uint256 amount) external returns (bool) {
+        require(balanceOf[msg.sender] >= amount, "MOCK: balance low");
+        balanceOf[msg.sender] -= amount;
+        balanceOf[to] += amount;
+        return true;
+    }
+}
+
 contract TokenFlowTest is Test {
     MIMHO token;
     MockTokenRegistry registry;
@@ -534,6 +550,70 @@ contract TokenFlowTest is Test {
             token.balanceOf(stakingTarget);
 
         assertEq(tracked, TOTAL_SUPPLY);
+    }
+
+
+    // =====================================================
+    // ERC20 RECOVERY
+    // =====================================================
+
+    function test_RecoverForeignERC20() public {
+        RecoverMockERC20 foreignToken = new RecoverMockERC20();
+
+        foreignToken.mint(address(token), 1_000 ether);
+
+        token.recoverTokens(address(foreignToken), alice, 400 ether);
+
+        assertEq(foreignToken.balanceOf(alice), 400 ether);
+        assertEq(foreignToken.balanceOf(address(token)), 600 ether);
+    }
+
+    function test_Revert_RecoverForeignERC20ZeroAmount() public {
+        RecoverMockERC20 foreignToken = new RecoverMockERC20();
+
+        foreignToken.mint(address(token), 1_000 ether);
+
+        vm.expectRevert(bytes("MIMHO: Amount zero"));
+        token.recoverTokens(address(foreignToken), alice, 0);
+    }
+
+
+    // =====================================================
+    // NATIVE RECOVERY
+    // =====================================================
+
+    function test_RecoverNative() public {
+        uint256 amount = 1 ether;
+
+        vm.deal(address(token), amount);
+
+        uint256 beforeBal = alice.balance;
+
+        token.recoverNative(payable(alice), amount);
+
+        assertEq(alice.balance, beforeBal + amount);
+        assertEq(address(token).balance, 0);
+    }
+
+    function test_Revert_RecoverNativeZeroAddress() public {
+        vm.deal(address(token), 1 ether);
+
+        vm.expectRevert(bytes("MIMHO: To zero"));
+        token.recoverNative(payable(address(0)), 1 ether);
+    }
+
+    function test_Revert_RecoverNativeZeroAmount() public {
+        vm.deal(address(token), 1 ether);
+
+        vm.expectRevert(bytes("MIMHO: Amount zero"));
+        token.recoverNative(payable(alice), 0);
+    }
+
+    function test_Revert_RecoverNativeAmountAboveBalance() public {
+        vm.deal(address(token), 1 ether);
+
+        vm.expectRevert(bytes("MIMHO: Native balance low"));
+        token.recoverNative(payable(alice), 2 ether);
     }
 
 }
