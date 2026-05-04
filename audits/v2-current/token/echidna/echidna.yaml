@@ -1,0 +1,12 @@
+testMode: property
+seqLen: 100
+testLimit: 5000
+corpusDir: corpus
+coverage: true
+deployer: "0x10000"
+sender: ["0x10000", "0x20000", "0x30000"]
+filterFunctions:
+  - "EchidnaToken.actionWalletTransfer(uint8,uint8,uint256)"
+  - "EchidnaToken.actionSell(uint8,uint256)"
+  - "EchidnaToken.actionBuy(uint8,uint256)"
+  - "EchidnaToken.actionApproveAndTransferFrom(uint8,uint8,uint8,uint256)"
