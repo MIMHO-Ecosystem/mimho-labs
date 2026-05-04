@@ -222,13 +222,17 @@ contract MIMHORegistry is IMIMHORegistry, IMIMHOProtocol, Ownable2Step {
 
     // ---------------- Governance ----------------
 
-    function setDAO(address _dao) external onlyOwner whenNotPaused {
-        require(_dao != address(0), "ZERO");
+    function setDAO(address daoAddr) external onlyOwner whenNotPaused {
+        require(daoAddr != address(0), "ZERO");
         require(dao == address(0), "SET");
-        dao = _dao;
-        _setContractAddress(KEY_MIMHO_DAO, _dao);
-        emit DAOSet(_dao);
-        _emitHubEvent(ACT_SET_DAO, 0, abi.encode(_dao));
+
+        dao = daoAddr;
+
+        // Local event before any best-effort Hub emission path.
+        emit DAOSet(daoAddr);
+
+        _setContractAddress(KEY_MIMHO_DAO, daoAddr);
+        _emitHubEvent(ACT_SET_DAO, 0, abi.encode(daoAddr));
     }
 
     function activateDAO() external onlyOwner whenNotPaused {
