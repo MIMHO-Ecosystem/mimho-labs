@@ -138,7 +138,7 @@ contract MIMHORegistry is IMIMHORegistry, IMIMHOProtocol, Ownable2Step {
     event Unpaused();
     event EventsHubSet(address indexed hub);
     event AddressSet(bytes32 indexed moduleId, address indexed addr);
-    event PartnerServiceSet(address indexed partner, bytes32 indexed serviceId, uint64 validUntil, bool allowed);
+    event PartnerServiceSet(address indexed partner, bytes32 indexed serviceId, uint64 indexed validUntil, bool allowed);
 
     modifier onlyDAOorOwner() {
         if (daoActivated) {
@@ -467,5 +467,6 @@ contract MIMHORegistry is IMIMHORegistry, IMIMHOProtocol, Ownable2Step {
     }
 
     function onExternalAction(address, bytes32) external pure override {
+        return;
     }
 }
