@@ -434,3 +434,241 @@ contract RegistryFlowTest is Test {
         registry.setPartnerService(alice, serviceId, true, uint64(block.timestamp));
     }
 }
+
+contract RegistryHandler is Test {
+    MIMHORegistry public registry;
+
+    address public ownerSafe;
+
+    bytes32[] private contractKeysList;
+    bytes32[] private walletKeysList;
+
+    address[] private contractValuesList;
+    address[] private walletValuesList;
+
+    constructor(MIMHORegistry registry_, address ownerSafe_) {
+        registry = registry_;
+        ownerSafe = ownerSafe_;
+
+        contractKeysList.push(registry.KEY_MIMHO_STAKING());
+        contractKeysList.push(registry.KEY_MIMHO_LOCKER());
+        contractKeysList.push(registry.KEY_MIMHO_AIRDROP());
+        contractKeysList.push(registry.KEY_MIMHO_BURN());
+        contractKeysList.push(registry.KEY_MIMHO_INJECT_LIQUIDITY());
+        contractKeysList.push(registry.KEY_MIMHO_MART());
+        contractKeysList.push(registry.KEY_MIMHO_MARKETPLACE());
+
+        walletKeysList.push(registry.KEY_MIMHO_DAO_WALLET());
+        walletKeysList.push(registry.KEY_WALLET_MARKETING());
+        walletKeysList.push(registry.KEY_WALLET_DONATION());
+        walletKeysList.push(registry.KEY_WALLET_BURN());
+        walletKeysList.push(registry.KEY_WALLET_TECHNICAL());
+        walletKeysList.push(registry.KEY_WALLET_LP_RESERVE());
+
+        contractValuesList.push(address(0xC001));
+        contractValuesList.push(address(0xC002));
+        contractValuesList.push(address(0xC003));
+        contractValuesList.push(address(0xC004));
+        contractValuesList.push(address(0xC005));
+        contractValuesList.push(address(0xC006));
+        contractValuesList.push(address(0xC007));
+
+        walletValuesList.push(address(0xA001));
+        walletValuesList.push(address(0xA002));
+        walletValuesList.push(address(0xA003));
+        walletValuesList.push(address(0xA004));
+        walletValuesList.push(address(0xA005));
+        walletValuesList.push(address(0xA006));
+    }
+
+    function actionSetContract(uint8 keySeed, uint8 valueSeed) external {
+        bytes32 key = contractKeysList[keySeed % contractKeysList.length];
+        address value = contractValuesList[valueSeed % contractValuesList.length];
+
+        vm.prank(ownerSafe);
+        try registry.setContract(key, value) {} catch {}
+    }
+
+    function actionSetWallet(uint8 keySeed, uint8 valueSeed) external {
+        bytes32 key = walletKeysList[keySeed % walletKeysList.length];
+        address value = walletValuesList[valueSeed % walletValuesList.length];
+
+        vm.prank(ownerSafe);
+        try registry.setWallet(key, value) {} catch {}
+    }
+
+    function actionSetToken(uint8 valueSeed) external {
+        address value = contractValuesList[valueSeed % contractValuesList.length];
+
+        vm.prank(ownerSafe);
+        try registry.setMIMHOToken(value) {} catch {}
+    }
+
+    function actionSetEventsHub(uint8 valueSeed) external {
+        address value = contractValuesList[valueSeed % contractValuesList.length];
+
+        vm.prank(ownerSafe);
+        try registry.setEventsHub(value) {} catch {}
+    }
+
+    function actionSetPartnerService(uint8 partnerSeed, uint8 serviceSeed, uint32 duration) external {
+        address partner = contractValuesList[partnerSeed % contractValuesList.length];
+        bytes32 serviceId = keccak256(abi.encodePacked("SERVICE", serviceSeed));
+
+        uint64 validUntil = uint64(block.timestamp + bound(uint256(duration), 1 days, 365 days));
+
+        vm.prank(ownerSafe);
+        try registry.setPartnerService(partner, serviceId, true, validUntil) {} catch {}
+    }
+
+    function contractKeyCount() external view returns (uint256) {
+        return contractKeysList.length;
+    }
+
+    function walletKeyCount() external view returns (uint256) {
+        return walletKeysList.length;
+    }
+
+    function contractValueCount() external view returns (uint256) {
+        return contractValuesList.length;
+    }
+
+    function walletValueCount() external view returns (uint256) {
+        return walletValuesList.length;
+    }
+
+    function contractKeyAt(uint256 i) external view returns (bytes32) {
+        return contractKeysList[i];
+    }
+
+    function walletKeyAt(uint256 i) external view returns (bytes32) {
+        return walletKeysList[i];
+    }
+
+    function contractValueAt(uint256 i) external view returns (address) {
+        return contractValuesList[i];
+    }
+
+    function walletValueAt(uint256 i) external view returns (address) {
+        return walletValuesList[i];
+    }
+}
+
+contract RegistryInvariantTest is Test {
+    MIMHORegistry registry;
+    RegistryHandler handler;
+
+    address ownerSafe = address(this);
+    address dao = address(0xDA0);
+
+    function setUp() public {
+        registry = new MIMHORegistry(ownerSafe);
+
+        registry.setDAO(dao);
+
+        handler = new RegistryHandler(registry, ownerSafe);
+
+        targetContract(address(handler));
+    }
+
+    function invariant_CoreConfiguredMatchesStoredAddresses() public view {
+        bool expected =
+            registry.getContract(registry.KEY_MIMHO_TOKEN()) != address(0) &&
+            registry.getContract(registry.KEY_MIMHO_DAO()) != address(0) &&
+            registry.getContract(registry.KEY_MIMHO_EVENTS_HUB()) != address(0);
+
+        assertEq(registry.checkCoreConfigured(), expected);
+    }
+
+    function invariant_WalletsConfiguredMatchesStoredAddresses() public view {
+        bool expected =
+            registry.getContract(registry.KEY_MIMHO_DAO_WALLET()) != address(0) &&
+            registry.getContract(registry.KEY_WALLET_MARKETING()) != address(0) &&
+            registry.getContract(registry.KEY_WALLET_DONATION()) != address(0) &&
+            registry.getContract(registry.KEY_WALLET_BURN()) != address(0);
+
+        assertEq(registry.checkWalletsConfigured(), expected);
+    }
+
+    function invariant_LegacyAliasesRemainConsistent() public view {
+        assertEq(
+            registry.getContract(registry.KEY_LP_INJECTOR()),
+            registry.getContract(registry.KEY_MIMHO_INJECT_LIQUIDITY())
+        );
+
+        assertEq(
+            registry.getContract(registry.KEY_STAKING_CONTRACT()),
+            registry.getContract(registry.KEY_MIMHO_STAKING())
+        );
+
+        assertEq(
+            registry.getContract(registry.KEY_MARKETING_WALLET()),
+            registry.getContract(registry.KEY_WALLET_MARKETING())
+        );
+    }
+
+    function invariant_CompatibilityGettersMatchRegistryStorage() public view {
+        assertEq(registry.mimhoToken(), registry.getContract(registry.KEY_MIMHO_TOKEN()));
+        assertEq(registry.mimhoStaking(), registry.getContract(registry.KEY_MIMHO_STAKING()));
+        assertEq(registry.mimhoBurn(), registry.getContract(registry.KEY_MIMHO_BURN()));
+        assertEq(registry.mimhoLocker(), registry.getContract(registry.KEY_MIMHO_LOCKER()));
+        assertEq(registry.mimhoAirdrop(), registry.getContract(registry.KEY_MIMHO_AIRDROP()));
+        assertEq(registry.mimhoInjectLiquidity(), registry.getContract(registry.KEY_MIMHO_INJECT_LIQUIDITY()));
+        assertEq(registry.mimhoMart(), registry.getContract(registry.KEY_MIMHO_MART()));
+        assertEq(registry.mimhoMarketplace(), registry.getContract(registry.KEY_MIMHO_MARKETPLACE()));
+    }
+
+    function invariant_CurrentContractValuesAreEcosystemContracts() public view {
+        uint256 keyCount = handler.contractKeyCount();
+
+        for (uint256 i = 0; i < keyCount; i++) {
+            address value = registry.getContract(handler.contractKeyAt(i));
+
+            if (value != address(0)) {
+                assertTrue(registry.isEcosystemContract(value));
+            }
+        }
+
+        address token = registry.getContract(registry.KEY_MIMHO_TOKEN());
+        address daoAddr = registry.getContract(registry.KEY_MIMHO_DAO());
+        address hub = registry.getContract(registry.KEY_MIMHO_EVENTS_HUB());
+
+        if (token != address(0)) assertTrue(registry.isEcosystemContract(token));
+        if (daoAddr != address(0)) assertTrue(registry.isEcosystemContract(daoAddr));
+        if (hub != address(0)) assertTrue(registry.isEcosystemContract(hub));
+    }
+
+    function invariant_WalletValuesAreNotEcosystemContractsUnlessAlsoUsedAsContracts() public view {
+        uint256 walletValueCount = handler.walletValueCount();
+
+        for (uint256 i = 0; i < walletValueCount; i++) {
+            address walletValue = handler.walletValueAt(i);
+
+            bool alsoContract = _isCurrentContractValue(walletValue);
+
+            if (!alsoContract) {
+                assertFalse(registry.isEcosystemContract(walletValue));
+            }
+        }
+    }
+
+    function invariant_RegistryNeverPausedInThisHandler() public view {
+        assertFalse(registry.paused());
+    }
+
+    function _isCurrentContractValue(address value) internal view returns (bool) {
+        uint256 keyCount = handler.contractKeyCount();
+
+        for (uint256 i = 0; i < keyCount; i++) {
+            if (registry.getContract(handler.contractKeyAt(i)) == value) {
+                return true;
+            }
+        }
+
+        if (registry.getContract(registry.KEY_MIMHO_TOKEN()) == value) return true;
+        if (registry.getContract(registry.KEY_MIMHO_DAO()) == value) return true;
+        if (registry.getContract(registry.KEY_MIMHO_EVENTS_HUB()) == value) return true;
+
+        return false;
+    }
+}
