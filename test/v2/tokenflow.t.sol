@@ -39,6 +39,7 @@ contract TokenFlowTest is Test {
     address owner = address(this);
     address alice = address(0xA11CE);
     address bob = address(0xB0B);
+    address carol = address(0xCA20);
     address dao = address(0xDA0);
     address pair = address(0xFA1);
     address stakingTarget = address(0x5700);
@@ -614,6 +615,45 @@ contract TokenFlowTest is Test {
 
         vm.expectRevert(bytes("MIMHO: Native balance low"));
         token.recoverNative(payable(alice), 2 ether);
+    }
+
+
+    // =====================================================
+    // MYTHRIL SWC-101 APPROVE VALIDATION
+    // =====================================================
+
+    function test_ApproveMaxUintDoesNotOverflow() public {
+        vm.prank(alice);
+        token.approve(bob, type(uint256).max);
+
+        assertEq(token.allowance(alice, bob), type(uint256).max);
+    }
+
+    function test_ApproveMaxUintTransferFromDecrementsSafely() public {
+        token.transfer(alice, 1_000 ether);
+        token.enableTrading();
+
+        vm.prank(alice);
+        token.approve(bob, type(uint256).max);
+
+        vm.prank(bob);
+        token.transferFrom(alice, carol, 100 ether);
+
+        assertEq(token.balanceOf(carol), 100 ether);
+        assertEq(token.balanceOf(alice), 900 ether);
+        assertEq(token.allowance(alice, bob), type(uint256).max - 100 ether);
+    }
+
+    function test_ApproveMaxUintCanBeOverwrittenToZero() public {
+        vm.startPrank(alice);
+
+        token.approve(bob, type(uint256).max);
+        assertEq(token.allowance(alice, bob), type(uint256).max);
+
+        token.approve(bob, 0);
+        assertEq(token.allowance(alice, bob), 0);
+
+        vm.stopPrank();
     }
 
 }
