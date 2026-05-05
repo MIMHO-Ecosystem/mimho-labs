@@ -135,7 +135,7 @@ contract MIMHOEventsHub is IMIMHOEventsHub, IMIMHOProtocol {
     event RegistryUpdated(address indexed  oldRegistry, address indexed  newRegistry);
     event Paused();
     event Unpaused();
-    event EmitterBlacklisted(address indexed  emitter, bool status);
+    event EmitterBlacklisted(address indexed emitter, bool indexed status);
 
     /* ============================================================
                               MODIFIERS
@@ -388,7 +388,9 @@ contract MIMHOEventsHub is IMIMHOEventsHub, IMIMHOProtocol {
         return 0;
     }
 
-    function onExternalAction(address, bytes32) external pure override {
-        // no-op (future hook)
+    function onExternalAction(address user, bytes32 action) external pure override {
+        if (user == address(0) && action == bytes32(0)) {
+            return;
+        }
     }
 }
