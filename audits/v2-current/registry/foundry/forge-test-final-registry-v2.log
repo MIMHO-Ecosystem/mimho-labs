@@ -1,0 +1,161 @@
+Warning: Found unknown `ignored_paths` config for profile `default` defined in foundry.toml.
+No files changed, compilation skipped
+
+Ran 39 tests for test/v2/registryflow.t.sol:RegistryFlowTest
+[PASS] test_ActivateDAO() (gas: 90965)
+[PASS] test_BrokenEventsHubDoesNotBreakFutureSetters() (gas: 215779)
+[PASS] test_CheckCoreConfigured() (gas: 628014)
+[PASS] test_CheckWalletsConfigured() (gas: 136503)
+[PASS] test_ConstructorSetsOwnerSafeAndOwner() (gas: 17555)
+[PASS] test_DAOCanPauseAfterActivation() (gas: 98327)
+[PASS] test_DAOCannotPauseBeforeActivation() (gas: 93290)
+[PASS] test_LegacyAliasesResolveCorrectTargets() (gas: 161462)
+[PASS] test_Metadata() (gas: 24942)
+[PASS] test_OwnerCanPauseBeforeDAOActivation() (gas: 34580)
+[PASS] test_OwnerCannotPauseAfterDAOActivation() (gas: 96223)
+[PASS] test_PartnerServiceExpires() (gas: 45585)
+[PASS] test_ProtocolNeutralViews() (gas: 14198)
+[PASS] test_RemovePartnerService() (gas: 36411)
+[PASS] test_ReplacingContractUpdatesEcosystemRefs() (gas: 78850)
+[PASS] test_Revert_ActivateDAOTwice() (gas: 96091)
+[PASS] test_Revert_ActivateDAOWithoutDAO() (gas: 15733)
+[PASS] test_Revert_ConstructorZeroOwner() (gas: 66137)
+[PASS] test_Revert_PauseTwice() (gas: 39856)
+[PASS] test_Revert_SetContractWithSpecificCoreKeys() (gas: 36860)
+[PASS] test_Revert_SetContractWithWalletKey() (gas: 16694)
+[PASS] test_Revert_SetContractZero() (gas: 15535)
+[PASS] test_Revert_SetDAOTwice() (gas: 92437)
+[PASS] test_Revert_SetDAOZero() (gas: 16068)
+[PASS] test_Revert_SetMIMHOTokenZero() (gas: 13027)
+[PASS] test_Revert_SetPartnerServiceExpiredDate() (gas: 16678)
+[PASS] test_Revert_SetPartnerServiceZeroPartner() (gas: 14541)
+[PASS] test_Revert_SetWalletWithContractKey() (gas: 17848)
+[PASS] test_Revert_SetWalletZero() (gas: 14590)
+[PASS] test_Revert_UnpauseWhenNotPaused() (gas: 12384)
+[PASS] test_SetContract() (gas: 70511)
+[PASS] test_SetDAO() (gas: 95206)
+[PASS] test_SetEventsHub() (gas: 504917)
+[PASS] test_SetMIMHOToken() (gas: 69726)
+[PASS] test_SetPartnerServiceAllowed() (gas: 46692)
+[PASS] test_SetWalletsAndGetWallets() (gas: 144595)
+[PASS] test_Unpause() (gas: 27157)
+[PASS] test_WalletDoesNotCountAsEcosystemContract() (gas: 44218)
+[PASS] test_WhenPausedBlocksConfigSetters() (gas: 39579)
+Suite result: ok. 39 passed; 0 failed; 0 skipped; finished in 18.91ms (12.98ms CPU time)
+
+Ran 7 tests for test/v2/registryflow.t.sol:RegistryInvariantTest
+[PASS] invariant_CompatibilityGettersMatchRegistryStorage() (runs: 256, calls: 128000, reverts: 0)
+
+╭-----------------+-------------------------+-------+---------+----------╮
+| Contract        | Selector                | Calls | Reverts | Discards |
++========================================================================+
+| RegistryHandler | actionSetContract       | 25570 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetEventsHub      | 25672 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetPartnerService | 25527 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetToken          | 25450 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetWallet         | 25781 | 0       | 0        |
+╰-----------------+-------------------------+-------+---------+----------╯
+
+[PASS] invariant_CoreConfiguredMatchesStoredAddresses() (runs: 256, calls: 128000, reverts: 0)
+
+╭-----------------+-------------------------+-------+---------+----------╮
+| Contract        | Selector                | Calls | Reverts | Discards |
++========================================================================+
+| RegistryHandler | actionSetContract       | 25459 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetEventsHub      | 25637 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetPartnerService | 25764 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetToken          | 25547 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetWallet         | 25593 | 0       | 0        |
+╰-----------------+-------------------------+-------+---------+----------╯
+
+[PASS] invariant_CurrentContractValuesAreEcosystemContracts() (runs: 256, calls: 128000, reverts: 0)
+
+╭-----------------+-------------------------+-------+---------+----------╮
+| Contract        | Selector                | Calls | Reverts | Discards |
++========================================================================+
+| RegistryHandler | actionSetContract       | 25788 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetEventsHub      | 25421 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetPartnerService | 25607 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetToken          | 25932 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetWallet         | 25252 | 0       | 0        |
+╰-----------------+-------------------------+-------+---------+----------╯
+
+[PASS] invariant_LegacyAliasesRemainConsistent() (runs: 256, calls: 128000, reverts: 0)
+
+╭-----------------+-------------------------+-------+---------+----------╮
+| Contract        | Selector                | Calls | Reverts | Discards |
++========================================================================+
+| RegistryHandler | actionSetContract       | 25553 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetEventsHub      | 25693 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetPartnerService | 25553 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetToken          | 25520 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetWallet         | 25681 | 0       | 0        |
+╰-----------------+-------------------------+-------+---------+----------╯
+
+[PASS] invariant_RegistryNeverPausedInThisHandler() (runs: 256, calls: 128000, reverts: 0)
+
+╭-----------------+-------------------------+-------+---------+----------╮
+| Contract        | Selector                | Calls | Reverts | Discards |
++========================================================================+
+| RegistryHandler | actionSetContract       | 25589 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetEventsHub      | 25655 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetPartnerService | 25676 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetToken          | 25555 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetWallet         | 25525 | 0       | 0        |
+╰-----------------+-------------------------+-------+---------+----------╯
+
+[PASS] invariant_WalletValuesAreNotEcosystemContractsUnlessAlsoUsedAsContracts() (runs: 256, calls: 128000, reverts: 0)
+
+╭-----------------+-------------------------+-------+---------+----------╮
+| Contract        | Selector                | Calls | Reverts | Discards |
++========================================================================+
+| RegistryHandler | actionSetContract       | 25691 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetEventsHub      | 25781 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetPartnerService | 25169 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetToken          | 25616 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetWallet         | 25743 | 0       | 0        |
+╰-----------------+-------------------------+-------+---------+----------╯
+
+[PASS] invariant_WalletsConfiguredMatchesStoredAddresses() (runs: 256, calls: 128000, reverts: 0)
+
+╭-----------------+-------------------------+-------+---------+----------╮
+| Contract        | Selector                | Calls | Reverts | Discards |
++========================================================================+
+| RegistryHandler | actionSetContract       | 25632 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetEventsHub      | 25695 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetPartnerService | 25888 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetToken          | 25183 | 0       | 0        |
+|-----------------+-------------------------+-------+---------+----------|
+| RegistryHandler | actionSetWallet         | 25602 | 0       | 0        |
+╰-----------------+-------------------------+-------+---------+----------╯
+
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 527.41s (1006.62s CPU time)
+
+Ran 2 test suites in 527.54s (527.43s CPU time): 46 tests passed, 0 failed, 0 skipped (46 total tests)
