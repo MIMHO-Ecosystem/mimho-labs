@@ -1,0 +1,10 @@
+'forge clean' running (wd: /mnt/c/Users/Tatiana/Documents/MIMHO_LABS)
+'forge config --json' running
+Warning: Found unknown `ignored_paths` config for profile `default` defined in foundry.toml.
+'forge build --build-info src/v2/eventshub.sol' running (wd: /mnt/c/Users/Tatiana/Documents/MIMHO_LABS)
+INFO:Detectors:
+Detector: assembly
+MIMHOEventsHub._clipCalldata(bytes,uint256) (src/v2/eventshub.sol#191-210) uses assembly
+	- INLINE ASM (src/v2/eventshub.sol#207-209)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+INFO:Slither:src/v2/eventshub.sol analyzed (4 contracts with 101 detectors), 1 result(s) found

@@ -1,0 +1,14 @@
+'forge clean' running (wd: /mnt/c/Users/Tatiana/Documents/MIMHO_LABS)
+'forge config --json' running
+Warning: Found unknown `ignored_paths` config for profile `default` defined in foundry.toml.
+'forge build --build-info src/v2/eventshub.sol' running (wd: /mnt/c/Users/Tatiana/Documents/MIMHO_LABS)
+INFO:Detectors:
+Detector: assembly
+MIMHOEventsHub._clipCalldata(bytes,uint256) (src/v2/eventshub.sol#187-203) uses assembly
+	- INLINE ASM (src/v2/eventshub.sol#199-203)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+INFO:Detectors:
+Detector: naming-convention
+Parameter MIMHOEventsHub.setDAO(address)._dao (src/v2/eventshub.sol#257-258) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+INFO:Slither:src/v2/eventshub.sol analyzed (4 contracts with 101 detectors), 2 result(s) found

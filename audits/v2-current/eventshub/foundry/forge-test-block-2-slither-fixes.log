@@ -1,0 +1,76 @@
+Warning: Found unknown `ignored_paths` config for profile `default` defined in foundry.toml.
+Compiling 73 files with Solc 0.8.28
+Solc 0.8.28 finished in 159.03s
+Compiler run successful with warnings:
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/eventshub.sol:374:5:
+    |
+374 |     function isFinalized() external view override returns (bool) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to pure
+   --> src/v2/eventshub.sol:374:5:
+    |
+374 |     function isFinalized() external view override returns (bool) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+  --> test/v2/eventshubflow.t.sol:95:5:
+   |
+95 |     function test_Constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/v2/eventshubflow.t.sol:113:5:
+    |
+113 |     function test_Metadata() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/v2/eventshubflow.t.sol:123:5:
+    |
+123 |     function test_ProtocolNeutralViews() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (2018): Function state mutability can be restricted to view
+   --> test/v2/eventshubflow.t.sol:232:5:
+    |
+232 |     function test_CanEmit() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Ran 31 tests for test/v2/eventshubflow.t.sol:EventsHubFlowTest
+[PASS] test_CanEmit() (gas: 32580)
+[PASS] test_CanEmitFalseWhenBlacklisted() (gas: 40673)
+[PASS] test_CanEmitFalseWhenPaused() (gas: 18133)
+[PASS] test_Constructor() (gas: 18417)
+[PASS] test_DAOCanOperateAfterActivation() (gas: 46327)
+[PASS] test_DAOCannotOperateBeforeActivation() (gas: 37306)
+[PASS] test_EcosystemEmitterCanEmit() (gas: 44070)
+[PASS] test_HubStatus() (gas: 21948)
+[PASS] test_Metadata() (gas: 18893)
+[PASS] test_OwnerCannotOperateAfterDAOActivation() (gas: 39847)
+[PASS] test_PauseBlocksEmit() (gas: 33408)
+[PASS] test_PayloadIsTruncatedWhenTooLarge() (gas: 56015)
+[PASS] test_ProtocolNeutralViews() (gas: 10715)
+[PASS] test_RegistryItselfCanEmit() (gas: 36643)
+[PASS] test_Revert_ActivateDAOTwice() (gas: 40939)
+[PASS] test_Revert_ActivateDAOWithoutDAO() (gas: 12305)
+[PASS] test_Revert_BlacklistZeroEmitter() (gas: 11727)
+[PASS] test_Revert_ConstructorZeroOwner() (gas: 40071)
+[PASS] test_Revert_ConstructorZeroRegistry() (gas: 39709)
+[PASS] test_Revert_EOACannotEmit() (gas: 19523)
+[PASS] test_Revert_EmitterBlacklisted() (gas: 54055)
+[PASS] test_Revert_InvalidAction() (gas: 29823)
+[PASS] test_Revert_InvalidCaller() (gas: 30120)
+[PASS] test_Revert_InvalidModule() (gas: 29966)
+[PASS] test_Revert_NonEcosystemContractCannotEmit() (gas: 166952)
+[PASS] test_Revert_SetDAOTwice() (gas: 37268)
+[PASS] test_Revert_SetDAOZero() (gas: 12290)
+[PASS] test_Revert_UpdateRegistryZero() (gas: 11543)
+[PASS] test_SetDAOAndActivateDAO() (gas: 38079)
+[PASS] test_UnpauseRestoresEmit() (gas: 41102)
+[PASS] test_UpdateRegistry() (gas: 195489)
+Suite result: ok. 31 passed; 0 failed; 0 skipped; finished in 11.44ms (12.98ms CPU time)
+
+Ran 1 test suite in 63.70ms (11.44ms CPU time): 31 tests passed, 0 failed, 0 skipped (31 total tests)

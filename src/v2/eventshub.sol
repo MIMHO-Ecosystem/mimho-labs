@@ -263,11 +263,11 @@ contract MIMHOEventsHub is IMIMHOEventsHub, IMIMHOProtocol {
                           ADMIN / GOVERNANCE (NO EMIT)
        ============================================================ */
 
-    function setDAO(address _dao) external onlyDAOorOwner {
-        require(_dao != address(0), "MIMHO: zero dao");
+    function setDAO(address daoAddr) external onlyDAOorOwner {
+        require(daoAddr != address(0), "MIMHO: zero dao");
         require(dao == address(0), "MIMHO: dao already set");
-        dao = _dao;
-        emit DAOSet(_dao);
+        dao = daoAddr;
+        emit DAOSet(daoAddr);
     }
 
     function activateDAO() external onlyDAOorOwner {
