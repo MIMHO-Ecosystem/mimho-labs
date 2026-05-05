@@ -1,0 +1,13 @@
+testMode: property
+seqLen: 100
+testLimit: 5000
+corpusDir: corpus
+coverage: true
+deployer: "0x10000"
+sender: ["0x10000", "0x20000", "0x30000"]
+filterFunctions:
+  - "EchidnaRegistry.actionSetContract(uint8,uint8)"
+  - "EchidnaRegistry.actionSetWallet(uint8,uint8)"
+  - "EchidnaRegistry.actionSetToken(uint8)"
+  - "EchidnaRegistry.actionSetEventsHub(uint8)"
+  - "EchidnaRegistry.actionSetPartnerService(uint8,uint8,uint32)"
